@@ -29,6 +29,7 @@ public class Address {
     @Column(nullable = true)
     private String city;
 
-    @OneToOne(mappedBy = "address",cascade = CascadeType.ALL, orphanRemoval = false)
-    public User user;
+    @OneToOne
+    @JoinColumn(name = "userId", referencedColumnName = "id")
+    private User user;
 }
