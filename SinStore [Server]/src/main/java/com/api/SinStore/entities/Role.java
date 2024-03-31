@@ -21,8 +21,7 @@ public class Role {
     private int id;
 
     @Column(nullable = false, unique = true)
-    @Enumerated(EnumType.STRING)
-    private RoleName name;
+    private String name;
 
     @OneToMany(mappedBy = "role")
     public Set<User> user = new HashSet<>();

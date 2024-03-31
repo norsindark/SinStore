@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,24 +42,24 @@ public class User implements UserDetails {
     @JoinColumn(name = "roleId", nullable = false)
     private Role role;
 
-    @OneToOne(fetch =  FetchType.EAGER)
-    @JoinColumn(name = "address", nullable = true)
-    private Address address;
-
     @Column(name = "phone", nullable = true, length = 13)
     private String  phone;
 
     @Column(name = "status")
-    private boolean status;
+    private String  status;
 
     @Column(name = "enable")
     private boolean enabled;
 
     @Column(name = "created_at", nullable = false)
+    @CreationTimestamp
     private Timestamp created_at;
 
     @Column(name = "updated_at")
     private Timestamp  updated_at;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Address address;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -95,9 +94,5 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return enabled;
-    }
-
-    public boolean getStatus() {
-        return status;
     }
 }
