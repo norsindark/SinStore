@@ -4,6 +4,7 @@ import com.api.SinStore.dtos.UserDto;
 import com.api.SinStore.entities.User;
 import com.api.SinStore.exceptions.UserNotFoundException;
 import com.api.SinStore.services.Interfaces.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,5 +32,14 @@ public class UserController {
     @PostMapping("/check-role")
     public ResponseEntity<String> getRoleUser(@RequestBody UserDto request) throws UserNotFoundException {
         return ResponseEntity.ok(this.userService.getRoleUser(request));
+    }
+
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PutMapping("/update/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<User> updateUser(
+            @Valid @RequestBody UserDto request, @PathVariable String id
+    ) throws UserNotFoundException {
+        return ResponseEntity.ok(this.userService.updateUser(request, id));
     }
 }

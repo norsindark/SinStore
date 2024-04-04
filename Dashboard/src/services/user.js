@@ -4,36 +4,15 @@ import { BASE_API } from 'constant/network';
 import { BASE_URL_SERVER } from '../constant/network'
 
 
-const updateUser = async (editingUser, editedName, editedEmail, editedRole, editedStatus, editedPassword, editedStreet, editedCity, editedCountry, editedPostalCode, editedAbout, setIsModalOpen, setEditingUser) => {
+const updateUser = async (editingUser, formData, setIsModalOpen, setEditingUser) => {
     const isConfirmed = window.confirm("Are you sure you want to save these changes?");
     if (isConfirmed) {
         try {
-            let encodedPassword = editingUser.password;
-
-            if (editedPassword !== editingUser.password) {
-                encodedPassword = await encodePassword(editedPassword);
-            }
-
-            const updatedUser = {
-                id: editingUser.id,
-                name: editedName,
-                email: editedEmail,
-                avatarUrl: editingUser.avatarUrl,
-                role: editedRole,
-                status: editedStatus,
-                password: encodedPassword,
-                address: {
-                    street: editedStreet,
-                    city: editedCity,
-                    country: editedCountry,
-                    postal_code: editedPostalCode
-                },
-                about: editedAbout,
-                token: editingUser.token,
-            };
-
-            await axios.put(`${BASE_API}/users/${editingUser.id}`, updatedUser);
-
+            await axios.put(`${BASE_URL_SERVER}/api/v1/client/user/update/${editingUser.id}`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                }
+            });
 
             setIsModalOpen(false);
             setEditingUser(null);
@@ -43,7 +22,6 @@ const updateUser = async (editingUser, editedName, editedEmail, editedRole, edit
             console.error("Error updating user:", error);
         }
     }
-
 };
 
 const updateUserPassword = async (user, newPassword) => {

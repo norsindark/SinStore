@@ -5,57 +5,47 @@ import UserHeader from "components/dashboard/Headers/UserHeader.js";
 import { useAuth } from "context/auth";
 import { updateUser } from "services/user";
 import { BASE_API } from "constant/network";
+import avtImg from "../../../assets/img/theme/avt.jpg";
 
 const Profile = () => {
-  const [userData, setUserData] = useState(null);
+  const [currenUser, setCurrenUser] = useState(null);
   const { getUserByAccessToken } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [editedName, setEditedName] = useState("");
   const [editedEmail, setEditedEmail] = useState("");
-  const [editedRole, setEditedRole] = useState("");
-  const [editedStatus, setEditedStatus] = useState("");
+  const [editedPhone, setEditedPhone] = useState("");
   const [editedPassword, setEditedPassword] = useState("");
   const [editedStreet, setEditedStreet] = useState("");
   const [editedCity, setEditedCity] = useState("");
   const [editedCountry, setEditedCountry] = useState("");
   const [editedPostalCode, setEditedPostalCode] = useState("");
   const [editedAbout, setEditedAbout] = useState("");
-  const [avatarBase64, setAvatarBase64] = useState(userData?.avatarBase64 || '');
+  const [avatarBase64, setAvatarBase64] = useState(currenUser?.avatarBase64 || '');
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const user = await getUserByAccessToken();
-        const response = await axios.get(`http://localhost:3001/users?email=${user.email}`);
-        const { data } = response;
-        if (data && data.length > 0) {
-          setUserData(data[0]);
-        } else {
-          console.error("User not found in database");
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
+    const fetchUser = async () => {
+      const user = await getUserByAccessToken();
+      setCurrenUser(user);
+      console.log("User:", user);
     };
-    fetchUserData();
-  }, [getUserByAccessToken]);
+    fetchUser();
+  }, []);
 
-
-  const handleEditUser = (userData) => {
-    setEditingUser(userData);
-    setEditedName(userData.name);
-    setEditedEmail(userData.email);
-    setEditedRole(userData.role);
-    setEditedStatus(userData.status);
-    setEditedPassword(userData.password);
-    setEditedStreet(userData.address.street);
-    setEditedCity(userData.address.city);
-    setEditedCountry(userData.address.country);
-    setEditedPostalCode(userData.address.postal_code);
-    setEditedAbout(userData.about);
+  const handleEditUser = (currenUser) => {
+    setEditingUser(currenUser);
+    setEditedName(currenUser.fullName);
+    setEditedEmail(currenUser.email);
+    setEditedPhone(currenUser.phone);
+    setEditedPassword(currenUser.password);
+    setEditedStreet(currenUser.address.street);
+    setEditedCity(currenUser.address.city);
+    setEditedCountry(currenUser.address.country);
+    setEditedPostalCode(currenUser.address.postalCode);
+    setEditedAbout(currenUser.about);
     setIsModalOpen(true);
   };
+
 
   const handleCancelEdit = () => {
     setEditingUser(null);
@@ -70,6 +60,9 @@ const Profile = () => {
         break;
       case "email":
         setEditedEmail(value);
+        break;
+      case "phone":
+        setEditedPhone(value);
         break;
       case "street":
         setEditedStreet(value);
@@ -95,24 +88,22 @@ const Profile = () => {
   };
 
   const handleSaveEdit = async () => {
-    updateUser(editingUser, editedName, editedEmail, editedRole, editedStatus, editedPassword, editedStreet, editedCity, editedCountry, editedPostalCode, editedAbout, setIsModalOpen, setEditingUser);
-  };
+    const formData = {
+        fullName: editedName,
+        email: editedEmail,
+        password: editedPassword,
+        phone: editedPhone,
+        address: {
+            street: editedStreet,
+            city: editedCity,
+            country: editedCountry,
+            postalCode: editedPostalCode
+        },
+        about: editedAbout,
+    };
 
-  const refreshUserData = async () => {
-    try {
-      const userEmail = await getUserByAccessToken();
-      const response = await axios.get(`http://localhost:3001/users?email=${userEmail.email}`);
-      const { data } = response;
-      if (data && data.length > 0) {
-        setUserData(data[0]);
-      } else {
-        console.error("User not found in database");
-      }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
-  };
-
+    updateUser(editingUser, formData, setIsModalOpen, setEditingUser);
+};
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
 
@@ -123,9 +114,9 @@ const Profile = () => {
       const base64String = reader.result;
 
       try {
-        setEditingUser(userData);
-        const updatedUser = { ...userData, avatarUrl: base64String };
-        await axios.put(`${BASE_API}/users/${userData.id}`, updatedUser);
+        setEditingUser(currenUser);
+        const updatedUser = { ...currenUser, avatarUrl: base64String };
+        await axios.put(`${BASE_API}/users/${currenUser.id}`, updatedUser);
         console.log("Avatar updated successfully!");
       } catch (error) {
         console.error("Error updating avatar:", error);
@@ -149,10 +140,9 @@ const Profile = () => {
                       <img
                         alt="..."
                         className="rounded-circle"
-                        src={avatarBase64 || (userData?.avatarUrl || "")}
+                        src={avatarBase64 || (currenUser?.avatarUrl ?? avtImg)}
                       />
                     </label>
-                    {/* Input để chọn file */}
                     <input
                       type="file"
                       id="avatar-upload"
@@ -206,15 +196,15 @@ const Profile = () => {
                 </Row>
                 <div className="text-center">
                   <h3>
-                    {userData?.name || "Update information about you"}
+                    {currenUser?.fullName || "Update information about you"}
                   </h3>
                   <div className="h5 font-weight-300">
                     <i className="ni location_pin mr-2" />
-                    {userData?.address.street || ""}
+                    {currenUser?.address.street || ""}
                   </div>
                   <div className="h5 mt-4">
                     <i className="ni business_briefcase-24 mr-2" />
-                    {userData?.address.city || "Update information about you"} - {userData?.address.country || ""}
+                    {currenUser?.address.city || "Update information about you"} - {currenUser?.address.country || ""}
                   </div>
                   <div>
                     <i className="ni education_hat mr-2" />
@@ -222,7 +212,7 @@ const Profile = () => {
                   </div>
                   <hr className="my-4" />
                   <p>
-                    {userData?.about || "Update information about you"}
+                    {currenUser?.about || "Update information about you"}
                   </p>
                   {/* <a href="#pablo" onClick={(e) => e.preventDefault()}>
                     Show more
@@ -247,7 +237,7 @@ const Profile = () => {
                     <Button
                       color="info"
                       href="#pablo"
-                      onClick={() => handleEditUser(userData)}
+                      onClick={() => handleEditUser(currenUser)}
                     >
                       Edit profile
                     </Button>
@@ -272,7 +262,7 @@ const Profile = () => {
                           </label>
                           <Input
                             className="form-control-alternative"
-                            defaultValue={userData?.name || ""}
+                            defaultValue={currenUser?.fullName || ""}
                             id="input-username"
                             placeholder="Username"
                             type="text"
@@ -290,7 +280,7 @@ const Profile = () => {
                           </label>
                           <Input
                             className="form-control-alternative"
-                            defaultValue={userData?.email || ""}
+                            defaultValue={currenUser?.email || ""}
                             id="input-email"
                             placeholder="Email"
                             type="email"
@@ -310,7 +300,7 @@ const Profile = () => {
                           </label>
                           <Input
                             className="form-control-alternative"
-                            defaultValue={userData ? userData.name.split(' ')[0] : ""}
+                            defaultValue={currenUser ? currenUser.fullName.split(' ')[0] : ""}
                             id="input-first-name"
                             placeholder="First name"
                             type="text"
@@ -328,7 +318,7 @@ const Profile = () => {
                           </label>
                           <Input
                             className="form-control-alternative"
-                            defaultValue={userData ? userData.name.split(' ').slice(1).join(' ') : ""}
+                            defaultValue={currenUser ? currenUser.fullName.split(' ').slice(1).join(' ') : ""}
                             id="input-last-name"
                             placeholder="Last name"
                             type="text"
@@ -356,7 +346,7 @@ const Profile = () => {
                           </label>
                           <Input
                             className="form-control-alternative"
-                            defaultValue={userData?.address.street || ""}
+                            defaultValue={currenUser?.address.street || ""}
                             id="input-address"
                             placeholder="Address"
                             type="text"
@@ -376,7 +366,7 @@ const Profile = () => {
                           </label>
                           <Input
                             className="form-control-alternative"
-                            defaultValue={userData?.address.city || ""}
+                            defaultValue={currenUser?.address.city || ""}
                             id="input-city"
                             placeholder="City"
                             type="text"
@@ -394,7 +384,7 @@ const Profile = () => {
                           </label>
                           <Input
                             className="form-control-alternative"
-                            defaultValue={userData?.address.country || ""}
+                            defaultValue={currenUser?.address.country || ""}
                             id="input-country"
                             placeholder="Country"
                             type="text"
@@ -412,7 +402,7 @@ const Profile = () => {
                           </label>
                           <Input
                             className="form-control-alternative"
-                            defaultValue={userData?.address.postal_code || ""}
+                            defaultValue={currenUser?.address.postalCode || ""}
                             id="input-postal-code"
                             placeholder="Postal code"
                             type="number"
@@ -432,7 +422,7 @@ const Profile = () => {
                         className="form-control-alternative"
                         placeholder="A few words about you ..."
                         rows="4"
-                        defaultValue={userData?.about || ""}
+                        defaultValue={currenUser?.about || ""}
                         type="textarea"
                         disabled
                       />
@@ -452,31 +442,35 @@ const Profile = () => {
             <Form>
               <FormGroup>
                 <Label for="name">Name</Label>
-                <Input type="text" name="name" id="name" value={editedName} onChange={handleChange} />
+                <Input type="text" name="name" id="name" value={editedName || ""} onChange={handleChange} />
               </FormGroup>
               <FormGroup>
                 <Label for="email">Email</Label>
-                <Input type="email" name="email" id="email" value={editedEmail} onChange={handleChange} />
+                <Input type="email" name="email" id="email" value={editedEmail || ""} onChange={handleChange} />
+              </FormGroup>
+              <FormGroup>
+                <Label for="phone">Phone Number</Label>
+                <Input type="phone" name="phone" id="phone" value={editedPhone || ""} onChange={handleChange} />
               </FormGroup>
               <FormGroup>
                 <Label for="street">Street</Label>
-                <Input type="text" name="street" id="street" value={editedStreet} onChange={handleChange} />
+                <Input type="text" name="street" id="street" value={editedStreet || ""} onChange={handleChange} />
               </FormGroup>
               <FormGroup>
                 <Label for="city">City</Label>
-                <Input type="text" name="city" id="city" value={editedCity} onChange={handleChange} />
+                <Input type="text" name="city" id="city" value={editedCity || ""} onChange={handleChange} />
               </FormGroup>
               <FormGroup>
                 <Label for="country">Country</Label>
-                <Input type="text" name="country" id="country" value={editedCountry} onChange={handleChange} />
+                <Input type="text" name="country" id="country" value={editedCountry || ""} onChange={handleChange} />
               </FormGroup>
               <FormGroup>
                 <Label for="postal_code">Postal Code</Label>
-                <Input type="text" name="postalCode" id="postalCode" value={editedPostalCode} onChange={handleChange} />
+                <Input type="text" name="postalCode" id="postalCode" value={editedPostalCode || ""} onChange={handleChange} />
               </FormGroup>
               <FormGroup>
                 <Label for="about">About Me</Label>
-                <Input type="textarea" name="about" id="about" value={editedAbout} onChange={handleChange} />
+                <Input type="textarea" name="about" id="about" value={editedAbout || ""} onChange={handleChange} />
               </FormGroup>
             </Form>
           </ModalBody>

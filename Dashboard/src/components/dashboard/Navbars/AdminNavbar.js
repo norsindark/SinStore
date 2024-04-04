@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useAuth } from "context/auth.js";
 import {
   DropdownMenu,
   DropdownItem,
@@ -15,8 +17,31 @@ import {
   Input,
   InputGroup,
 } from "reactstrap";
+import avtImg from "../../../assets/img/theme/avt.jpg";
 
-const AdminNavbar = ({ brandText, currentUser }) => {
+
+const AdminNavbar = ({ brandText }) => {
+  const [currentUser, setCurrentUser] = useState(null);
+  const { getUserByAccessToken } = useAuth();
+  const [isAuthenticatedChecked, setIsAuthenticatedChecked] = useState(false);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const user = await getUserByAccessToken();
+      if (user) {
+        setCurrentUser(user);
+      } else {
+        setCurrentUser(null);
+        console.log("User:", user.role.name);
+      }
+      setIsAuthenticatedChecked(true);
+    };
+
+    if (!isAuthenticatedChecked || !currentUser) {
+      getUser();
+    }
+  }, [isAuthenticatedChecked, getUserByAccessToken, currentUser]);
+
   return (
     <>
       <Navbar className="navbar-top navbar-dark" expand="md" id="navbar-main">
@@ -46,12 +71,14 @@ const AdminNavbar = ({ brandText, currentUser }) => {
                   <span className="avatar avatar-sm rounded-circle">
                     <img
                       alt="..."
-                      src={currentUser ? currentUser.avatarUrl : ""}
+                      src={ avtImg}
+
+                      // src={currentUser ? currentUser.avatarUrl : avtImg}
                     />
                   </span>
                   <Media className="ml-2 d-none d-lg-block">
                     <span className="mb-0 text-sm font-weight-bold">
-                      {currentUser ? currentUser.name : ""}
+                      {currentUser ? currentUser.fullName : ""}
                     </span>
                   </Media>
                 </Media>
