@@ -102,7 +102,7 @@ const Sidebar = (props) => {
         {/* Brand */}
         {logo ? (
           <NavbarBrand className="pt-0" {...navbarBrandProps}>
-            <h1>SinD </h1>
+            <h1>Sin Store </h1>
           </NavbarBrand>
         ) : null}
         {/* User */}

@@ -29,7 +29,7 @@ public class User implements UserDetails {
     @UuidGenerator
 //    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", length = 36, nullable = false)
-    private UUID id;
+    private String id;
 
     @Column(nullable = false, length = 64)
     private String fullName;
@@ -54,6 +54,10 @@ public class User implements UserDetails {
     @Column(name = "enable")
     private boolean enabled;
 
+//    @Lob
+//    @Column(name = "avatarUrl", columnDefinition = "BYTEA")
+//    private byte[] avatarUrl;
+
     @Column(name = "created_at", nullable = false)
     @CreationTimestamp
     private Timestamp created_at;
@@ -64,6 +68,11 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private Address address;
+
+    @Column(name = "about", length = 255, nullable = true)
+    private String about;
+
+//    private String resetPasswordToken;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

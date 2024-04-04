@@ -1,8 +1,7 @@
-
-import React from "react";
-import { useLocation, Route, Routes, Navigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useLocation, Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import { Container, Row, Col } from "reactstrap";
-
+import { useAuth } from "context/auth.js";
 import AuthNavbar from "components/dashboard/Navbars/AuthNavbar.js";
 import AuthFooter from "components/dashboard/Footers/AuthFooter";
 
@@ -11,6 +10,32 @@ import routesAuth from "routers/routesAuth";
 const AuthLayout = (props) => {
   const mainContent = React.useRef(null);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const { getUserByAccessToken } = useAuth();
+
+  const [isAuthenticatedChecked, setIsAuthenticatedChecked] = useState(false);
+
+  // useEffect(() => {
+  //   const checkAuth = async () => {
+  //     const user = await getUserByAccessToken();
+  //     if (user) {
+  //       if (user.role.name !== "ADMIN") {
+  //         navigate("/admin/dashboard");
+  //       } else {
+  //         // console.log("User:", user);
+  //       }
+  //     } else {
+  //       console.log("User is null");
+  //       navigate("/auth/login");
+  //     }
+  //     setIsAuthenticatedChecked(true);
+  //   };
+  
+  //   if (!isAuthenticatedChecked) {
+  //     checkAuth();
+  //   }
+  // }, [isAuthenticatedChecked, navigate, getUserByAccessToken]);
 
   React.useEffect(() => {
     document.body.classList.add("bg-default");

@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
-// import clientRoutes from "routers/ClientRouter";
 import RestaurantTemplate from "layouts/client/RestaurantTemplate";
 import ClientProduct from "layouts/client/ClientProduct";
 
@@ -21,7 +20,6 @@ const App = () => {
       <Route path="/admin/*" element={<AdminLayout />} />
       <Route path="/auth/*" element={<AuthLayout />} />
       <Route path="*" element={<UnauthorizedPage />} />
-      {/* <Route path="*" element={<Navigate to="/admin/dashboard" replace />} /> */}
     </Routes>
   )
 }

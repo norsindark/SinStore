@@ -6,26 +6,26 @@ import { useAuth } from "context/auth";
 
 
 const UserHeader = () => {
+  const [currentUser, setCurrentUser] = useState(null);
   const { getUserByAccessToken } = useAuth();
-  const [userData, setUserData] = useState(null);
+  const [isAuthenticatedChecked, setIsAuthenticatedChecked] = useState(false);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const user = await getUserByAccessToken();
-        const response = await axios.get(`http://localhost:3001/users?email=${user.email}`);
-        const { data } = response;
-        if (data && data.length > 0) {
-          setUserData(data[0]);
-        } else {
-          console.error("User not found in database");
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
+    const getUser = async () => {
+      const user = await getUserByAccessToken();
+      if (user) {
+        setCurrentUser(user);
+      } else {
+        setCurrentUser(null);
+        console.log("User:", user.role.name);
       }
+      setIsAuthenticatedChecked(true);
     };
-    fetchUserData();
-  }, [getUserByAccessToken]);
+
+    if (!isAuthenticatedChecked || !currentUser) {
+      getUser();
+    }
+  }, [isAuthenticatedChecked, getUserByAccessToken, currentUser]);
 
   return (
     <>
@@ -45,7 +45,7 @@ const UserHeader = () => {
         <Container className="d-flex align-items-center" fluid>
           <Row>
             <Col lg="7" md="10">
-              <h1 className="display-2 text-white">Hello {userData?.name || "Guest"}</h1>
+              <h1 className="display-2 text-white">Hello {currentUser?.fullName || "Guest"}</h1>
               <p className="text-white mt-0 mb-5">
                 This is your profile page. You can see the progress you've made
                 with your work and manage your projects or assigned tasks

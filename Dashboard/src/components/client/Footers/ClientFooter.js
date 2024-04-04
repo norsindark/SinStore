@@ -3,7 +3,7 @@ import logoImg from "../../../assets/img/footer_logo.png";
 
 const ClientFooter = () => {
   return (
-    <footer>
+    <footer className='client__footer'>
       <div className="footer_overlay pt_100 xs_pt_70 pb_100 xs_pb_70">
         <div className="container wow fadeInUp" data-wow-duration="1s">
           <div className="row justify-content-between">

@@ -31,6 +31,9 @@ public class Address {
     @Column(nullable = true)
     private String city;
 
+    @Column(nullable = true)
+    private int postalCode;
+
     @OneToOne
     @JoinColumn(name = "userId", referencedColumnName = "id")
     @JsonBackReference

@@ -20,4 +20,7 @@ public class AddressDto {
 
     @NotBlank(message = "city can't be empty")
     private String city;
+
+    @NotBlank(message = "postalCode can't be empty")
+    private int postalCode;
 }

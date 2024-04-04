@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { login } from "services/auth";
 import { getUser } from "services/user";
 
 export const AuthContext = createContext();
@@ -16,20 +15,6 @@ export default function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const navigate = useNavigate();
-
-    // const signIn = async (email, password) => {
-    //     const { accessToken } = await login(email, password);
-
-    //     console.log(accessToken);
-
-    //     setError(null);
-    //     setLoading(false);
-    //     if (!accessToken) return setUser(null)
-
-    //     axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`
-    //     setAccessToken(accessToken)
-    //     localStorage.setItem('accessToken', accessToken)
-    // }
 
     const getTokenFromLocalStorage = () => {
         const token = localStorage.get("accessToken")
