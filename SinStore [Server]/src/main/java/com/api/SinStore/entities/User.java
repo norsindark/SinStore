@@ -1,5 +1,7 @@
 package com.api.SinStore.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,8 +40,9 @@ public class User implements UserDetails {
     @Column(length = 64, nullable = false)
     private String password;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "roleId", nullable = false)
+    @JsonManagedReference
     private Role role;
 
     @Column(name = "phone", nullable = true, length = 13)
@@ -59,6 +62,7 @@ public class User implements UserDetails {
     private Timestamp  updated_at;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private Address address;
 
     @Override

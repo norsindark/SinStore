@@ -1,11 +1,14 @@
 package com.api.SinStore.services.Implements;
 
+import com.api.SinStore.dtos.RoleDto;
+import com.api.SinStore.dtos.UserDto;
 import com.api.SinStore.entities.Address;
 import com.api.SinStore.entities.Role;
 import com.api.SinStore.entities.User;
 import com.api.SinStore.enums.RoleName;
 import com.api.SinStore.exceptions.SignInException;
 import com.api.SinStore.exceptions.SignUpException;
+import com.api.SinStore.exceptions.UserNotFoundException;
 import com.api.SinStore.payloads.requests.LoginRequest;
 import com.api.SinStore.payloads.requests.SignUpRequest;
 import com.api.SinStore.payloads.responses.ApiResponse;
@@ -14,8 +17,9 @@ import com.api.SinStore.repositories.AddressRepository;
 import com.api.SinStore.repositories.RoleRepository;
 import com.api.SinStore.repositories.UserRepository;
 import com.api.SinStore.services.Interfaces.AuthService;
+import com.api.SinStore.utils.GetUserUtil;
 import com.api.SinStore.utils.JwtProviderUtils;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +28,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Component
 @Service
@@ -90,5 +96,14 @@ public class AuthServiceImpl implements AuthService {
         } catch (AuthenticationException e) {
             throw new SignInException("The account has not been verified!");
         }
+    }
+
+    @Override
+    public String getRoleUser(UserDto request) throws UserNotFoundException {
+        Optional<User> user = this.userRepository.findByEmail(request.getEmail());
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("User not found with: " + request.getEmail());
+        }
+        return  user.get().getRole().getName();
     }
 }

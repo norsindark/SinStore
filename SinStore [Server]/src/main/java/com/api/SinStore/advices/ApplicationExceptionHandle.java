@@ -2,6 +2,7 @@ package com.api.SinStore.advices;
 
 import com.api.SinStore.exceptions.SignInException;
 import com.api.SinStore.exceptions.SignUpException;
+import com.api.SinStore.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -38,6 +39,15 @@ public class ApplicationExceptionHandle {
     @ExceptionHandler(SignInException.class)
     @ResponseBody
     public Map<String ,String > handleBusinessException(SignInException e) {
+        Map<String ,String > errorMap = new HashMap<>();
+        errorMap.put("error", e.getMessage());
+        return errorMap;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseBody
+    public Map<String ,String > handleBusinessException(UserNotFoundException e) {
         Map<String ,String > errorMap = new HashMap<>();
         errorMap.put("error", e.getMessage());
         return errorMap;

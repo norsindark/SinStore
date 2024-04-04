@@ -1,6 +1,7 @@
 package com.api.SinStore.entities;
 
 import com.api.SinStore.enums.RoleName;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,5 +25,6 @@ public class Role {
     private String name;
 
     @OneToMany(mappedBy = "role")
+    @JsonBackReference
     public Set<User> user = new HashSet<>();
 }

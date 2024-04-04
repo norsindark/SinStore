@@ -40,7 +40,7 @@ public class SecurityConfig {
                         .requestMatchers(ADMIN_SECRET_URLS)
                         .hasAuthority("ADMIN")
                         .requestMatchers(USER_SECRET_URLS)
-                        .hasAuthority("USER")
+                        .hasAnyAuthority("USER", "ADMIN") // Allow both USER and ADMIN roles
                         .anyRequest()
                         .authenticated())
                 .sessionManagement((request) -> request
