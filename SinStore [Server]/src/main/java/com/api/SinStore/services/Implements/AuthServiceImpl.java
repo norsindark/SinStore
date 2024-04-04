@@ -16,37 +16,30 @@ import com.api.SinStore.repositories.UserRepository;
 import com.api.SinStore.services.Interfaces.AuthService;
 import com.api.SinStore.utils.JwtProviderUtils;
 import jakarta.transaction.Transactional;
-import jakarta.validation.constraints.Null;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 @Component
+@Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
-    @Autowired
-    private AddressRepository addressRepository;
+    private final AddressRepository addressRepository;
 
-    @Autowired
-    private PasswordEncoder encoder;
+    private final PasswordEncoder encoder;
 
-    @Autowired
-    private AuthenticationManager authManager;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private JwtProviderUtils jwtProviderUtils;
+    private final JwtProviderUtils jwtProviderUtils;
 
     @Override
     @Transactional
@@ -77,24 +70,25 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+
     @Override
-    public JwtResponse SignIn(LoginRequest loginRequest) {
+    public JwtResponse SignIn(LoginRequest request) throws SignInException {
         try {
-            System.out.println("here");
-            Authentication authentication = authManager.authenticate(
+            authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            loginRequest.getUsername(),
-                            loginRequest.getPassword())
+                            request.getEmail(),
+                            request.getPassword()
+                    )
             );
+            User _user = this.userRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> new SignInException("Email or password is invalid!"));
 
-            System.out.println("here1");
-
-            String jwt = jwtProviderUtils.generateTokenUsingEmail(loginRequest.getUsername());
+            var token = jwtProviderUtils.generaTokenUsingEmail(_user);
             return JwtResponse.builder()
-                    .accessToken(jwt)
+                    .accessToken(token)
                     .build();
         } catch (AuthenticationException e) {
-            throw new UsernameNotFoundException("Username or password is invalid");
+            throw new SignInException("The account has not been verified!");
         }
     }
 }

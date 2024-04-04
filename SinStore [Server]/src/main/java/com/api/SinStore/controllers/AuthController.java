@@ -31,7 +31,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> signIn(@Valid @RequestBody LoginRequest loginRequest) throws SignInException {
-        return new ResponseEntity<>(authService.SignIn(loginRequest), HttpStatus.OK);
+    public ResponseEntity<JwtResponse> login(
+            @Valid @RequestBody LoginRequest request
+    ) throws SignInException {
+        return ResponseEntity.ok(authService.SignIn(request));
     }
 }
