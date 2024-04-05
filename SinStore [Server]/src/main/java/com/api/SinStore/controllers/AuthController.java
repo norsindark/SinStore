@@ -6,8 +6,11 @@ import com.api.SinStore.exceptions.SignUpException;
 import com.api.SinStore.exceptions.UserNotFoundException;
 import com.api.SinStore.payloads.requests.LoginRequest;
 import com.api.SinStore.payloads.requests.SignUpRequest;
+import com.api.SinStore.payloads.responses.ApiResponse;
 import com.api.SinStore.payloads.responses.JwtResponse;
 import com.api.SinStore.services.Interfaces.AuthService;
+import com.api.SinStore.services.Interfaces.UserService;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +18,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class AuthController {
+
+    private final UserService userService;
 
     @Autowired
     AuthService authService;
@@ -41,5 +48,11 @@ public class AuthController {
     @PostMapping("/check-role")
     public ResponseEntity<String> getRoleUser(@RequestBody UserDto request) throws UserNotFoundException {
         return ResponseEntity.ok(this.authService.getRoleUser(request));
+    }
+
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping("/reset-password")
+    public ResponseEntity<ApiResponse> resetPassword(@RequestParam String email) throws UserNotFoundException, MessagingException, UnsupportedEncodingException {
+        return ResponseEntity.ok(this.userService.forgotPassword(email));
     }
 }

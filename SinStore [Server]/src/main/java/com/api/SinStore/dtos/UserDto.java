@@ -28,10 +28,10 @@ public class UserDto {
     @NotBlank(message = "email can't be empty")
     private String email;
 
-    @NotBlank(message = "Password can't be empty")
-    @Size(min = 6, max = 64, message = "Password length must be between 6 and 64 characters")
-    @Pattern(regexp = "^.{6,}$", message = "Password need more than 6 characters")
-    private String password;
+//    @NotBlank(message = "Password can't be empty")
+//    @Size(min = 6, max = 64, message = "Password length must be between 6 and 64 characters")
+//    @Pattern(regexp = "^.{6,}$", message = "Password need more than 6 characters")
+//    private String password;
 
     @NotBlank(message = "phone can't be empty")
     @Pattern(regexp = "^\\d{10,}$", message = "phone number must be a number")

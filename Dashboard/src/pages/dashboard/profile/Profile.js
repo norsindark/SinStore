@@ -3,24 +3,29 @@ import axios from "axios";
 import { Button, Card, CardHeader, CardBody, FormGroup, Form, Input, Container, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Label } from "reactstrap";
 import UserHeader from "components/dashboard/Headers/UserHeader.js";
 import { useAuth } from "context/auth";
-import { updateUser } from "services/user";
+import { updateUser, changePassword } from "services/user";
 import { BASE_API } from "constant/network";
 import avtImg from "../../../assets/img/theme/avt.jpg";
+import { FaEye, FaEyeSlash} from "react-icons/fa";
 
 const Profile = () => {
   const [currenUser, setCurrenUser] = useState(null);
   const { getUserByAccessToken } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalPasswordOpen, setIsModalPasswordOpen] = useState(false);
+
   const [editingUser, setEditingUser] = useState(null);
   const [editedName, setEditedName] = useState("");
   const [editedEmail, setEditedEmail] = useState("");
   const [editedPhone, setEditedPhone] = useState("");
   const [editedPassword, setEditedPassword] = useState("");
+  const [editedConfirmPassword, setEditedConfirmPassword] = useState("");
   const [editedStreet, setEditedStreet] = useState("");
   const [editedCity, setEditedCity] = useState("");
   const [editedCountry, setEditedCountry] = useState("");
   const [editedPostalCode, setEditedPostalCode] = useState("");
   const [editedAbout, setEditedAbout] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [avatarBase64, setAvatarBase64] = useState(currenUser?.avatarBase64 || '');
 
   useEffect(() => {
@@ -37,7 +42,7 @@ const Profile = () => {
     setEditedName(currenUser.fullName);
     setEditedEmail(currenUser.email);
     setEditedPhone(currenUser.phone);
-    setEditedPassword(currenUser.password);
+    // setEditedPassword(currenUser.password);
     setEditedStreet(currenUser.address.street);
     setEditedCity(currenUser.address.city);
     setEditedCountry(currenUser.address.country);
@@ -46,10 +51,34 @@ const Profile = () => {
     setIsModalOpen(true);
   };
 
+  const handleEditPassword = (currenUser) => {
+    setEditingUser(currenUser);
+    // setEditedPassword(currenUser.password);
+    // setEditedConfirmPassword(currenUser.password);
+    setIsModalPasswordOpen(true);
+  };
+
 
   const handleCancelEdit = () => {
     setEditingUser(null);
     setIsModalOpen(false);
+  };
+
+  const handleChangePassword = async () => {
+    if (editedPassword !== editedConfirmPassword) {
+      alert("Password and Confirm Password do not match!");
+      return;
+    }
+    setEditingUser(currenUser);
+    const formData = {
+      password: editedPassword,
+    };
+    changePassword(editingUser, formData, setIsModalOpen, setEditingUser);
+  };
+
+  const handleCancelEditPassword = () => {
+    setEditingUser(null);
+    setIsModalPasswordOpen(false);
   };
 
   const handleChange = (event) => {
@@ -82,6 +111,9 @@ const Profile = () => {
       case "password":
         setEditedPassword(value);
         break;
+      case "confirmPassword":
+        setEditedConfirmPassword(value);
+        break;
       default:
         break;
     }
@@ -89,21 +121,21 @@ const Profile = () => {
 
   const handleSaveEdit = async () => {
     const formData = {
-        fullName: editedName,
-        email: editedEmail,
-        password: editedPassword,
-        phone: editedPhone,
-        address: {
-            street: editedStreet,
-            city: editedCity,
-            country: editedCountry,
-            postalCode: editedPostalCode
-        },
-        about: editedAbout,
+      fullName: editedName,
+      email: editedEmail,
+      phone: editedPhone,
+      address: {
+        street: editedStreet,
+        city: editedCity,
+        country: editedCountry,
+        postalCode: editedPostalCode
+      },
+      about: editedAbout,
     };
 
     updateUser(editingUser, formData, setIsModalOpen, setEditingUser);
-};
+  };
+  
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
 
@@ -230,16 +262,23 @@ const Profile = () => {
             <Card className="bg-secondary shadow">
               <CardHeader className="bg-white border-0">
                 <Row className="align-items-center">
-                  <Col xs="8">
+                  <Col xs="4">
                     <h3 className="mb-0">My account</h3>
+                  </Col>
+                  <Col xs="4" className="text-right">
+                    <Button
+                      color="info"
+                      onClick={() => handleEditUser(currenUser)}
+                    >
+                      Edit profile
+                    </Button>
                   </Col>
                   <Col className="text-right" xs="4">
                     <Button
                       color="info"
-                      href="#pablo"
-                      onClick={() => handleEditUser(currenUser)}
+                      onClick={() => handleEditPassword(currenUser)}
                     >
-                      Edit profile
+                      Change Password
                     </Button>
                   </Col>
                 </Row>
@@ -434,8 +473,43 @@ const Profile = () => {
           </Col>
         </Row>
 
-        {/* Modal */}
-        {/* Modal */}
+        {/* Modal Change Password*/}
+        <Modal isOpen={isModalPasswordOpen} toggle={handleCancelEditPassword} backdrop="static">
+          <ModalHeader toggle={handleCancelEditPassword}>Change Password</ModalHeader>
+          <ModalBody>
+            <Form>
+              <FormGroup>
+                <Label for="newPassword">New Password</Label>
+                <div className="input-group">
+                  <Input type={showPassword ? "text" : "password"} name="password" id="password" value={editedPassword || ""} onChange={handleChange} />
+                  <div className="input-group-append">
+                    <span className="input-group-text" onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </span>
+                  </div>
+                </div>
+              </FormGroup>
+              <FormGroup>
+                <Label for="confirmNewPassword">Confirm New Password</Label>
+                <div className="input-group">
+                  <Input type={showPassword ? "text" : "password"} name="confirmPassword" id="confirmPassword" value={editedConfirmPassword || ""} onChange={handleChange} />
+                  <div className="input-group-append">
+                    <span className="input-group-text" onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </span>
+                  </div>
+                </div>
+              </FormGroup>
+            </Form>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="primary" onClick={handleChangePassword}>Change Password</Button>{' '}
+            <Button color="secondary" onClick={handleCancelEditPassword}>Cancel</Button>
+          </ModalFooter>
+        </Modal>
+
+
+        {/* Modal Edit*/}
         <Modal isOpen={isModalOpen} toggle={handleCancelEdit} backdrop="static">
           <ModalHeader toggle={handleCancelEdit}>Edit My Profile</ModalHeader>
           <ModalBody>

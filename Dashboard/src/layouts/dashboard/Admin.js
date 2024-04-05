@@ -24,7 +24,7 @@ const AdminLayout = (props) => {
           setCurrentUser(user);
           navigate("/admin/dashboard");
         } else {
-          console.log("User:", user.role.name );
+          // console.log("User:", user.role.name );
         }
       } else {
         console.log("User is null");
@@ -76,11 +76,11 @@ const AdminLayout = (props) => {
         <Sidebar
           {...props}
           routes={routes}
-          logo={{
-            innerLink: "/admin/index",
-            // imgSrc: require("../assets/img/brand/argon-react.png"),
-            imgAlt: "...",
-          }}
+          // logo={{
+          //   innerLink: "/admin/index",
+          //   imgSrc: require("../../assets/img/avt.jpg"),
+          //   imgAlt: "...",
+          // }}
         />
         <div className="main-content" ref={mainContent}>
           <AdminNavbar
