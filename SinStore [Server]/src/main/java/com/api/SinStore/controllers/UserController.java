@@ -6,6 +6,7 @@ import com.api.SinStore.exceptions.UserNotFoundException;
 import com.api.SinStore.payloads.requests.PasswordRequest;
 import com.api.SinStore.payloads.responses.ApiResponse;
 import com.api.SinStore.services.Interfaces.UserService;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 import java.util.UUID;
 

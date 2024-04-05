@@ -72,7 +72,7 @@ public class User implements UserDetails {
     @Column(name = "about", length = 255, nullable = true)
     private String about;
 
-//    private String resetPasswordToken;
+    private String forgotPasswordToken;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
