@@ -9,14 +9,15 @@ async function signIn(email, password) {
     };
     const response = await axios.post(`${BASE_URL_SERVER}/api/v1/auth/login`, requestData);
 
-    console.log(response.data);
+    // console.log(response.data);
 
     if (!response.data) throw new Error()
 
     localStorage.setItem('accessToken', response.data.accessToken)
-
+    window.alert("Login successfully");
     return response.data;
   } catch (error) {
+    window.alert("Email or password is incorrect!");
     return {
       accessToken: null
     }

@@ -4,18 +4,21 @@ import com.api.SinStore.dtos.UserDto;
 import com.api.SinStore.entities.Address;
 import com.api.SinStore.entities.User;
 import com.api.SinStore.exceptions.UserNotFoundException;
+import com.api.SinStore.payloads.requests.PasswordRequest;
+import com.api.SinStore.payloads.responses.ApiResponse;
 import com.api.SinStore.repositories.AddressRepository;
 import com.api.SinStore.repositories.UserRepository;
 import com.api.SinStore.services.Interfaces.UserService;
 import com.api.SinStore.utils.GetUserUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -77,4 +80,15 @@ public class UserServiceImpl implements UserService {
         return this.userRepository.save(_user);
     };
 
+    @Override
+    public ApiResponse changePassword(PasswordRequest request, String id) throws UserNotFoundException {
+        Optional<User> user = this.userRepository.findById(id);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("User not found with: " + id);
+        }
+        User _user = user.get();
+        _user.setPassword(passwordEncoder.encode(request.getPassword()));
+        this.userRepository.save(_user);
+        return new ApiResponse("Password change successfully!", HttpStatus.OK);
+    }
 }

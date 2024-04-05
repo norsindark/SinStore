@@ -24,6 +24,26 @@ const updateUser = async (editingUser, formData, setIsModalOpen, setEditingUser)
     }
 };
 
+const changePassword = async (editingUser, formData, setIsModalOpen, setEditingUser) => {
+    const isConfirmed = window.confirm("Are you sure you want to save these changes?");
+    if (isConfirmed) {
+        try {
+            await axios.put(`${BASE_URL_SERVER}/api/v1/client/user/change-password/${editingUser.id}`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                }
+            });
+
+            setIsModalOpen(false);
+            setEditingUser(null);
+            window.alert("User updated successfully!");
+            window.location.reload();
+        } catch (error) {
+            console.error("Error updating user:", error);
+        }
+    }
+};
+
 const updateUserPassword = async (user, newPassword) => {
     try {
         const hashedPassword = await encodePassword(newPassword);
@@ -72,5 +92,6 @@ export {
     updateUser,
     encodePassword,
     updateUserPassword,
-    getUser
+    getUser,
+    changePassword
 }

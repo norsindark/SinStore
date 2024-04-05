@@ -3,6 +3,8 @@ package com.api.SinStore.controllers;
 import com.api.SinStore.dtos.UserDto;
 import com.api.SinStore.entities.User;
 import com.api.SinStore.exceptions.UserNotFoundException;
+import com.api.SinStore.payloads.requests.PasswordRequest;
+import com.api.SinStore.payloads.responses.ApiResponse;
 import com.api.SinStore.services.Interfaces.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,5 +43,14 @@ public class UserController {
             @Valid @RequestBody UserDto request, @PathVariable String id
     ) throws UserNotFoundException {
         return ResponseEntity.ok(this.userService.updateUser(request, id));
+    }
+
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PutMapping("/change-password/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse> changePassword(
+            @Valid @RequestBody PasswordRequest request, @PathVariable String id
+    ) throws UserNotFoundException {
+        return ResponseEntity.ok(this.userService.changePassword(request, id));
     }
 }

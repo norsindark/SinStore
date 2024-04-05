@@ -23,7 +23,7 @@ public class SecurityConfig {
             "/api/v1/auth/**"
     };
     public static final String[] ADMIN_SECRET_URLS = {
-            "/api/v1/dashboard/**"
+            "/api/v1/admin/dashboard/**"
     };
 
     public static final String[] USER_SECRET_URLS = {
