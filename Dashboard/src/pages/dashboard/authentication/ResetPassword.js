@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { BASE_API } from 'constant/network';
 import { Button, Card, CardBody, Col, FormGroup, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
-import axios from 'axios';
-import { updateUserPassword } from "services/user";
+import { changePassword } from 'services/auth';
 
 const ResetPassword = () => {
     const [queryParameters] = useSearchParams();
-    const email = queryParameters.get("email");
     const token = queryParameters.get("token");
     const navigate = useNavigate();
     const [password, setPassword] = useState("");
@@ -45,25 +42,15 @@ const ResetPassword = () => {
             return;
         }
 
-        console.log(email, token);
-
         try {
-            const tokenResponse = await axios.get(`http://localhost:8080/api/auth/check-token?token=${token}`);
-            if (tokenResponse.data === true) {
-                const usersResponse = await axios.get(`http://localhost:3001/users?email=${email}`);
-                const users = usersResponse.data;
+            const tokenResponse = await changePassword(token, password);
+            // console.log(tokenResponse);
 
-
-                if (users && users.length > 0) {
-                    const user = users[0];
-                    const message = await updateUserPassword(user, password);
-                    alert(message);
-                    navigate("/auth/login", { replace: true });
-                } else {
-                    console.error("User not found with email:", email);
-                }
+            if (tokenResponse) {
+               window.alert(tokenResponse.message);   
+               navigate("/auth/login");  
             } else {
-                console.error("Invalid token");
+                setError("An error occurred. Please try again.");
             }
         } catch (error) {
             console.error("Error checking token:", error);

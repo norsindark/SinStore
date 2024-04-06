@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button, Card, CardBody, Col, FormGroup, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row, Modal, ModalHeader, ModalBody, ModalFooter, Label } from "reactstrap";
 import axios from "axios";
 import { useAuth } from "context/auth";
-import { signIn, getRoleUser } from "services/auth";
+import { signIn, getRoleUser, sendEmail } from "services/auth";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -46,12 +46,14 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8080/api/auth/forgot-password', { email });
-      alert("Password reset email sent successfully!");
+      await sendEmail(email);
+      // alert("Email sent successfully!");
+      setEmail("");
       toggleModal();
     } catch (error) {
       console.error("Error sending email:", error);
       alert("An error occurred while sending email.");
+      setEmail("");
     }
   };
 

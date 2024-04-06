@@ -1,6 +1,5 @@
 package com.api.SinStore.services.Implements;
 
-import com.api.SinStore.dtos.RoleDto;
 import com.api.SinStore.dtos.UserDto;
 import com.api.SinStore.entities.Address;
 import com.api.SinStore.entities.Role;
@@ -17,7 +16,6 @@ import com.api.SinStore.repositories.AddressRepository;
 import com.api.SinStore.repositories.RoleRepository;
 import com.api.SinStore.repositories.UserRepository;
 import com.api.SinStore.services.Interfaces.AuthService;
-import com.api.SinStore.utils.GetUserUtil;
 import com.api.SinStore.utils.JwtProviderUtils;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -105,5 +103,27 @@ public class AuthServiceImpl implements AuthService {
             throw new UserNotFoundException("User not found with: " + request.getEmail());
         }
         return  user.get().getRole().getName();
+    }
+
+    @Override
+    public Boolean checkResetPasswordToken(String token) throws UserNotFoundException {
+        Optional<User> user = this.userRepository.findByForgotPasswordToken(token);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("User not found!");
+        }
+        return true;
+    }
+
+    @Override
+    public ApiResponse changePassword(String token, String password) throws UserNotFoundException {
+        Optional<User> user = this.userRepository.findByForgotPasswordToken(token);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("User not found!");
+        }
+        User _user = user.get();
+        _user.setPassword(encoder.encode(password));
+        _user.setForgotPasswordToken(null);
+        this.userRepository.save(_user);
+        return new ApiResponse("Change password successfully!", HttpStatus.OK);
     }
 }

@@ -1,6 +1,7 @@
 package com.api.SinStore.controllers;
 
 import com.api.SinStore.dtos.UserDto;
+import com.api.SinStore.entities.User;
 import com.api.SinStore.exceptions.SignInException;
 import com.api.SinStore.exceptions.SignUpException;
 import com.api.SinStore.exceptions.UserNotFoundException;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,8 +53,23 @@ public class AuthController {
     }
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
-    @GetMapping("/reset-password")
-    public ResponseEntity<ApiResponse> resetPassword(@RequestParam String email) throws UserNotFoundException, MessagingException, UnsupportedEncodingException {
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse> resetPassword(@RequestParam String email)
+            throws UserNotFoundException, MessagingException, UnsupportedEncodingException {
         return ResponseEntity.ok(this.userService.forgotPassword(email));
+    }
+
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping("/reset-password-token")
+    public ResponseEntity<Boolean> checkResetPasswordToken(@RequestParam String token)
+            throws UserNotFoundException {
+        return ResponseEntity.ok(this.authService.checkResetPasswordToken(token));
+    }
+
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping("/change-password")
+    public ResponseEntity<ApiResponse> changePassword(@RequestParam String token, @RequestBody String password)
+            throws UserNotFoundException {
+        return ResponseEntity.ok(this.authService.changePassword(token, password));
     }
 }
