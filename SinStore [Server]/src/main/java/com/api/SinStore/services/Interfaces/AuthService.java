@@ -1,6 +1,5 @@
 package com.api.SinStore.services.Interfaces;
 
-import com.api.SinStore.dtos.RoleDto;
 import com.api.SinStore.dtos.UserDto;
 import com.api.SinStore.exceptions.SignInException;
 import com.api.SinStore.exceptions.SignUpException;
@@ -16,4 +15,8 @@ public interface AuthService {
     JwtResponse SignIn(LoginRequest request)throws SignInException;
 
     String getRoleUser(UserDto request) throws UserNotFoundException;
+
+    Boolean checkResetPasswordToken(String email) throws UserNotFoundException;
+
+    ApiResponse changePassword(String token, String password) throws UserNotFoundException;
 }

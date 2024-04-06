@@ -25,14 +25,49 @@ async function signIn(email, password) {
 }
 
 async function getRoleUser(email) {
-  const response = await axios.post( `${BASE_URL_SERVER}/api/v1/auth/check-role`,{ email },{
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
-    }
+  const response = await axios.post(`${BASE_URL_SERVER}/api/v1/auth/check-role`, { email }, {
+    headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
+  }
   );
   return response.data;
 }
 
+async function sendEmail(email) {
+  try {
+    console.log(email);
+    const response = await axios.post(`${BASE_URL_SERVER}/api/v1/auth/reset-password?email=${email}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+        }
+      });
 
+    if (response.data === 200) {
+      window.alert("Email sent successfully");
+    } else {
+      window.alert("Email not found");
+    };
+
+    return response.data;
+  } catch (error) {
+    console.error("Error sending email:", error);
+    return null;
+  }
+};
+
+async function changePassword(token, password) {
+  try {
+    console.log(token, password);
+    const response = await axios.post(`http://localhost:8080/api/v1/auth/change-password?token=${token}`, { password});
+    if (!response.data) {
+      throw new Error("Failed to check forgot password token");
+    }
+    return response.data;
+  } catch (error) {
+    console.error("Error checking forgot password token:", error);
+    return null;
+  }
+};
 
 async function register(email, password, fullName) {
   try {
@@ -59,8 +94,4 @@ async function register(email, password, fullName) {
   }
 };
 
-
-
-
-
-export { signIn, register, getRoleUser };
+export { signIn, register, getRoleUser, sendEmail, changePassword };
