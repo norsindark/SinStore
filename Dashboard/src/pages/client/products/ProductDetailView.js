@@ -68,6 +68,11 @@ const ProductDetails = () => {
                                 {product.rating ? <span>({product.ratingCount || 0})</span> : null}
                             </p>
                             <h3 className="price">{product.price || ""} VNĐ </h3>
+                            <p>
+                                In Stocks: {product.productWarehouses.map(productWarehouse => (
+                                    <span key={productWarehouse.id}>{productWarehouse.quantityAvailable}</span>
+                                ))}
+                            </p>
                             <p className="short_description">{product.description || "Description not available"}</p>
 
                             <div className="details_quentity">

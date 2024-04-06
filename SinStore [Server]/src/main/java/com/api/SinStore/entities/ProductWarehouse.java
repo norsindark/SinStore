@@ -1,5 +1,6 @@
 package com.api.SinStore.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,7 @@ public class ProductWarehouse {
 
     @ManyToOne
     @JoinColumn(name = "productId")
+    @JsonBackReference
     private Product productId;
 
     @ManyToOne
@@ -34,11 +36,4 @@ public class ProductWarehouse {
 
     @Column(name = "importQuantity", nullable = true)
     private int importQuantity;
-
-//    @PostLoad
-//    @PostPersist
-//    @PostUpdate
-//    public void calculateQuantityAvailable() {
-//        this.quantityAvailable = this.importQuantity - this.quantitySold;
-//    }
 }

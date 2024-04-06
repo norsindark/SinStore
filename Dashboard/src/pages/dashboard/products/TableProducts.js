@@ -36,7 +36,7 @@ const TableProducts = () => {
         const productsData = await getProducts();
         setProducts(productsData);
 
-        console.log(productsData);
+        console.log(productsData[0].productWarehouses);
 
 
         const categoriesData = await getCategories();
@@ -204,6 +204,9 @@ const TableProducts = () => {
                     <th scope="col">Category</th>
                     <th scope="col">Price</th>
                     <th scope="col">Description</th>
+                    <th scope="col">Import Quantity</th>
+                    <th scope="col">Quantity Available</th>
+                    <th scope="col">Quantity Sold</th>
                     <th scope="col" />
                   </tr>
                 </thead>
@@ -221,9 +224,24 @@ const TableProducts = () => {
                             <>{product.description}</>
                           ) : (
 
-                            <>{product.description.slice(0, 50)}{product.description.length > 100 && '...'}</>
+                            <>{product.description.slice(0, 20)}{product.description.length > 100 && '...'}</>
                           )}
                         </div>
+                      </td>
+                      <td>
+                        {product.productWarehouses.map(productWarehouse => (
+                          <span key={productWarehouse.id}>{productWarehouse.importQuantity}</span>
+                        ))}
+                      </td>
+                      <td>
+                        {product.productWarehouses.map(productWarehouse => (
+                          <span key={productWarehouse.id}>{productWarehouse.quantityAvailable}</span>
+                        ))}
+                      </td>
+                      <td>
+                        {product.productWarehouses.map(productWarehouse => (
+                          <span key={productWarehouse.id}>{productWarehouse.quantitySold}</span>
+                        ))}
                       </td>
                       <td className="text-right">
                         <UncontrolledDropdown>

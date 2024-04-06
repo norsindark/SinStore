@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ClientFooter from 'components/client/Footers/ClientFooter';
 import TopBar from 'components/client/topbar/TopBar';
 import ClientNavbar from 'components/client/navbars/ClientNavbar';
-import ProductDetailView from 'pages/client/products/ProductDetailView';
+import CartView from 'pages/client/cart/CartView';
 import ScrollButton from 'components/client/scrollButton/ScrollButton';
 import Breadcrumb from 'components/client/Breadcrumb/Breadcrum';
 import WOW from 'wowjs';
@@ -20,7 +20,10 @@ import "../../assets/css/responsive.css";
 
 
 
-const ProductDetails = () => {
+const Cart = () => {
+
+    useEffect(() => {
+    }, []);
 
     useEffect(() => {
         const wow = new WOW.WOW({
@@ -67,11 +70,8 @@ const ProductDetails = () => {
                 <Breadcrumb />
 
 
-                {/* banner */}
-                {/* <ClientBanner /> */}
-
-                {/* products */}
-                <ProductDetailView />
+                {/* cart */}
+                <CartView />
 
 
                 {/* footer */}
@@ -84,4 +84,4 @@ const ProductDetails = () => {
     );
 };
 
-export default ProductDetails;
+export default Cart;

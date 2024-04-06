@@ -6,6 +6,7 @@ import com.api.SinStore.entities.ProductWarehouse;
 import com.api.SinStore.entities.Warehouse;
 import com.api.SinStore.payloads.requests.ProductRequest;
 import com.api.SinStore.payloads.responses.ApiResponse;
+import com.api.SinStore.payloads.responses.ProductAndWarehouseResponse;
 import com.api.SinStore.repositories.CategoryRepository;
 import com.api.SinStore.repositories.ProductRepository;
 import com.api.SinStore.repositories.ProductWarehouseRepository;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +37,24 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> getAllProducts() {
         return this.productRepository.findAll();
+    }
+
+    @Override
+    public List<ProductAndWarehouseResponse> getAllProductsAndWarehouses() {
+        List<ProductAndWarehouseResponse> productAndWarehouseResponses = new ArrayList<>();
+        List<ProductWarehouse> productWarehouses = this.productWarehouseRepository.findAll();
+        List<Product> products = this.productRepository.findAll();
+        for (Product product : products) {
+            for (ProductWarehouse productWarehouse : productWarehouses) {
+                if (productWarehouse.getProductId().getId().equals(product.getId())) {
+                    productAndWarehouseResponses.add(ProductAndWarehouseResponse.builder()
+                            .product(product)
+                            .productWarehouse(productWarehouse)
+                            .build());
+                }
+            }
+        }
+        return productAndWarehouseResponses;
     }
 
     @Override
