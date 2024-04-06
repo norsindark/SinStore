@@ -13,6 +13,7 @@ const Products = () => {
     const [showProductImage, setShowProductImage] = useState('');
     const [showProductName, setShowProductName] = useState('');
     const [showProductPrice, setShowProductPrice] = useState('');
+    const [showProductQuantity, setShowProductQuantity] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(4);
 
@@ -44,9 +45,11 @@ const Products = () => {
     };
 
     const handleShow = (product) => {
+        let totalQuantityAvailable = product.productWarehouses.reduce((total, productWarehouse) => total + productWarehouse.quantityAvailable, 0);
         setShowProductImage(product.image);
         setShowProductName(product.name);
         setShowProductPrice(product.price);
+        setShowProductQuantity(totalQuantityAvailable);
         setShow(true);
     };
 
@@ -110,8 +113,14 @@ const Products = () => {
                                         {[...Array(5)].map((_, index) => (
                                             <i key={index} className="fas fa-star"></i>
                                         ))}
-                                        <span>5</span>
                                     </p>
+                                    <p>
+                                        In Stocks: {product.productWarehouses.map(productWarehouse => (
+                                            <span key={productWarehouse.id}>{productWarehouse.quantityAvailable}</span>
+                                        ))}
+                                    </p>
+
+
                                     <Link className="title" to={`/products/details/${product.slug}`}>{product.name}</Link>
                                     <h5 className="price">{product.price ? product.price : 'N/A'} VNĐ</h5>
 
@@ -159,9 +168,11 @@ const Products = () => {
                                 {[...Array(5)].map((_, index) => (
                                     <i key={index} className="fas fa-star"></i>
                                 ))}
-                                <span>5.0</span>
-                                <span>(5)</span>
                                 <h4 className="price">{showProductPrice}</h4>
+                            </p>
+                            <p>
+                                In Stocks: {showProductQuantity}
+                               
                             </p>
                         </div>
                         <div class="details_quentity">

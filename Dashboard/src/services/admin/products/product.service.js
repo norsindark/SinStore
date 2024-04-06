@@ -1,10 +1,20 @@
 import axios from 'axios'
 import { BASE_URL_SERVER } from '../../../constant/network';
 
+// async function getProducts() {
+//     const response = await axios.get(`${BASE_URL_SERVER}/api/v1/auth/products/all`);
+//     return response.data;
+// }
+
 async function getProducts() {
-    const response = await axios.get(`${BASE_URL_SERVER}/api/v1/auth/products/all`);
+    const response = await axios.get(`${BASE_URL_SERVER}/api/v1/auth/product-warehouses/all`, );
     return response.data;
 }
+
+async function getProductAndProductWarehouses() {
+    const response = await axios.get(`${BASE_URL_SERVER}/api/v1/auth/product-warehouses/all`, );
+    return response.data;
+};
 
 async function updateProduct(data) {
     console.log(data);
@@ -41,4 +51,4 @@ async function addNewProduct(data) {
     return response.data;
 };
 
-export { getProducts, updateProduct, deleteProduct, addNewProduct };
+export { getProducts, updateProduct, deleteProduct, addNewProduct, getProductAndProductWarehouses };

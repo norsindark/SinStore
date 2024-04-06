@@ -1,5 +1,6 @@
 package com.api.SinStore.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,4 +39,8 @@ public class Product {
     private String slug;
 
     private String image;
+
+    @OneToMany(mappedBy = "productId")
+    @JsonManagedReference
+    private List<ProductWarehouse> productWarehouses;
 }

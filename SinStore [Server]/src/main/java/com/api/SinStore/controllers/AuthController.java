@@ -83,4 +83,10 @@ public class AuthController {
     public ResponseEntity<List<Product>> getAllProducts() {
         return ResponseEntity.ok(this.productService.getAllProducts());
     }
+
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping("/product-warehouses/all")
+    public ResponseEntity<List<Product>> getAllProductsAndWarehouses() {
+        return ResponseEntity.ok(this.productService.getAllProducts());
+    }
 }
