@@ -1,6 +1,7 @@
 package com.api.SinStore.controllers;
 
 import com.api.SinStore.dtos.UserDto;
+import com.api.SinStore.entities.Product;
 import com.api.SinStore.entities.User;
 import com.api.SinStore.exceptions.SignInException;
 import com.api.SinStore.exceptions.SignUpException;
@@ -10,6 +11,7 @@ import com.api.SinStore.payloads.requests.SignUpRequest;
 import com.api.SinStore.payloads.responses.ApiResponse;
 import com.api.SinStore.payloads.responses.JwtResponse;
 import com.api.SinStore.services.Interfaces.AuthService;
+import com.api.SinStore.services.Interfaces.ProductService;
 import com.api.SinStore.services.Interfaces.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -20,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -28,6 +31,8 @@ import java.util.Optional;
 public class AuthController {
 
     private final UserService userService;
+
+    private final ProductService productService;
 
     @Autowired
     AuthService authService;
@@ -71,5 +76,11 @@ public class AuthController {
     public ResponseEntity<ApiResponse> changePassword(@RequestParam String token, @RequestBody String password)
             throws UserNotFoundException {
         return ResponseEntity.ok(this.authService.changePassword(token, password));
+    }
+
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping("/products/all")
+    public ResponseEntity<List<Product>> getAllProducts() {
+        return ResponseEntity.ok(this.productService.getAllProducts());
     }
 }

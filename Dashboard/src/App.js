@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useParams  } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import RestaurantTemplate from "layouts/client/RestaurantTemplate";
 import ClientProduct from "layouts/client/ClientProduct";
+import ProductDetails from "layouts/client/ProductDetails";
 
 import "assets/plugins/nucleo/css/nucleo.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -17,6 +18,7 @@ const App = () => {
     <Routes>
       <Route path="/*" element={<RestaurantTemplate />} />
       <Route path="/products/*" element={<ClientProduct />} />
+      <Route path="/products/details/:productSlug" element={<ProductDetails />} />
       <Route path="/admin/*" element={<AdminLayout />} />
       <Route path="/auth/*" element={<AuthLayout />} />
       <Route path="*" element={<UnauthorizedPage />} />

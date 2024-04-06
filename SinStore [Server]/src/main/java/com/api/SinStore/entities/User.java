@@ -74,6 +74,9 @@ public class User implements UserDetails {
 
     private String forgotPasswordToken;
 
+    @OneToOne(cascade = CascadeType.REMOVE, mappedBy = "userId")
+    private Cart cart;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(String.valueOf(role.getName())));
@@ -107,5 +110,12 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    @PostPersist
+    public void initCart() {
+        Cart newCart = new Cart();
+        newCart.setUserId(this);
+        this.setCart(newCart);
     }
 }
