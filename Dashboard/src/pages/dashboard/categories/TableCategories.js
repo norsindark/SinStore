@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Badge, Card, CardHeader, CardFooter, DropdownMenu, DropdownItem, UncontrolledDropdown, DropdownToggle, Media, Pagination, PaginationItem, PaginationLink, Progress, Table, Container, Row, UncontrolledTooltip, Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input } from "reactstrap";
 import Header from "components/dashboard/Headers/Header.js";
-import { getCategoryList, updateCategory, deleteCategory, createCategory } from "services/category";
+import { getCategories, updateCategory, deleteCategory, addNewCategory } from "services/admin/categories/category.service";
 
 const TableCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -10,13 +10,14 @@ const TableCategories = () => {
   const [editingCategory, setEditingCategory] = useState(null);
   const [editedName, setEditedName] = useState("");
   const [newCategoryName, setNewCategoryName] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage] = useState(5);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const categoryList = await getCategoryList();
+        const categoryList = await getCategories();
+        if (categoryList.length === 0) {
+          setCategories([]);
+        }
         setCategories(categoryList);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -38,7 +39,12 @@ const TableCategories = () => {
     const isConfirmed = window.confirm("Are you sure you want to save these changes?");
     if (isConfirmed) {
       try {
-        await updateCategory(editingCategory.id, { name: editedName });
+        const data = {
+          id: editingCategory.id,
+          name: editedName,
+        };
+
+        await updateCategory(data);
 
         const updatedCategories = categories.map(category =>
           category.id === editingCategory.id ? { ...category, name: editedName } : category
@@ -59,7 +65,7 @@ const TableCategories = () => {
   const handleCancelEdit = () => {
     setEditingCategory(null);
     setEditedName("");
-    setIsCreateModalOpen(false);
+    setIsEditModalOpen(false);
   };
 
   const handleCancelCreate = () => {
@@ -78,12 +84,12 @@ const TableCategories = () => {
     const isConfirmed = window.confirm("Are you sure you want to delete this category?");
     if (isConfirmed) {
       try {
-        await deleteCategory(categoryId);
-
-        const updatedCategories = categories.filter(category => category.id !== categoryId);
-        setCategories(updatedCategories);
-
-        window.alert("Category deleted successfully!");
+        const response = await deleteCategory(categoryId);
+        if (response) {
+          const updatedCategories = categories.filter(category => category.id !== categoryId);
+          setCategories(updatedCategories);
+          window.alert(response.message);
+        }
       } catch (error) {
         console.error("Error deleting category:", error);
       }
@@ -98,12 +104,14 @@ const TableCategories = () => {
     const isConfirmed = window.confirm(`Are you sure you want to create category "${newCategoryName}"?`);
     if (isConfirmed) {
       try {
-        await createCategory({ name: newCategoryName });
-        setIsCreateModalOpen();
-        setNewCategoryName('');
-        const updatedCategories = await getCategoryList();
-        setCategories(updatedCategories);
-        window.alert("Category created successfully!");
+        const response = await addNewCategory(newCategoryName);
+        if (response) {
+          setIsCreateModalOpen();
+          setNewCategoryName('');
+          const updatedCategories = await getCategories();
+          setCategories(updatedCategories);
+          window.alert(response.message);
+        }
       } catch (error) {
         console.error('Error creating category:', error);
       }
@@ -111,11 +119,6 @@ const TableCategories = () => {
   };
 
 
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = categories.slice(indexOfFirstProduct, indexOfLastProduct);
-
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <>
@@ -137,7 +140,7 @@ const TableCategories = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {currentProducts.map(category => (
+                  {categories.map(category => (
                     <tr key={category.id}>
                       <th scope="row">{category.id}</th>
                       <td>{category.name}</td>
@@ -167,40 +170,6 @@ const TableCategories = () => {
                   ))}
                 </tbody>
               </Table>
-              <CardFooter className="py-4">
-                <nav aria-label="...">
-                  <Pagination
-                    className="pagination justify-content-end mb-0"
-                    listClassName="justify-content-end mb-0"
-                  >
-                    <PaginationItem>
-                      <PaginationLink
-                        previous
-                        href="#"
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                        disabled={currentPage === 1}
-                      />
-                    </PaginationItem>
-                    {[...Array(Math.ceil(categories.length / productsPerPage)).keys()].map(
-                      (number) => (
-                        <PaginationItem key={number} className={number + 1 === currentPage ? "active" : ""}>
-                          <PaginationLink href="#" onClick={() => paginate(number + 1)}>
-                            {number + 1}
-                          </PaginationLink>
-                        </PaginationItem>
-                      )
-                    )}
-                    <PaginationItem>
-                      <PaginationLink
-                        next
-                        href="#"
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                        disabled={currentPage === Math.ceil(categories.length / productsPerPage)}
-                      />
-                    </PaginationItem>
-                  </Pagination>
-                </nav>
-              </CardFooter>
             </Card>
           </div>
         </Row>
@@ -229,7 +198,6 @@ const TableCategories = () => {
         </Modal>
 
         {/* Modal Create */}
-
         <Modal isOpen={isCreateModalOpen} toggle={handleCancelCreate}>
           <ModalHeader toggle={handleCancelCreate}>Create New Category</ModalHeader>
           <ModalBody>

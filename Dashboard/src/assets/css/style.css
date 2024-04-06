@@ -79,7 +79,7 @@ button {
 }
 
 :root {
-    --colorPrimary: #F86F03;
+    --colorPrimary: #1aacc9;
     --paraColor: #494949;
     --colorBlack: #010f1c;
     --colorWhite: #ffffff;
@@ -2493,11 +2493,12 @@ button {
     background-position: center !important;
     background-repeat: no-repeat !important;
     background-size: cover !important;
+    background-image: url(../img/background/bg.jpg);
 }
 
 .fp__breadcrumb_overlay {
     padding: 250px 0px 125px 0px;
-    background: #f86f03a3;
+    background: #010f12a3;
     position: relative;
 }
 
@@ -2573,8 +2574,8 @@ button {
 }
 
 .fp__pagination ul li a {
-    width: 50px !important;
-    height: 50px !important;
+    /* width: 50px !important;
+    height: 50px !important; */
     padding: 0 !important;
     line-height: 50px !important;
     text-align: center !important;
@@ -3771,7 +3772,7 @@ button {
 }
 
 .quentity_btn input {
-    width: 60px;
+    width: 180px;
     text-align: center;
     height: 35px;
     border-radius: 3px;
@@ -3850,7 +3851,7 @@ button {
 
 .fp__menu_description_area .nav .nav-item .nav-link:hover,
 .fp__menu_description_area .nav .nav-item .nav-link.active {
-    background: none !important;
+    background: #2e1e3b !important;
     color: var(--colorPrimary);
 }
 

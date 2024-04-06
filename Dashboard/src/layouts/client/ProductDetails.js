@@ -3,7 +3,7 @@ import ClientFooter from 'components/client/Footers/ClientFooter';
 import TopBar from 'components/client/topbar/TopBar';
 import ClientNavbar from 'components/client/navbars/ClientNavbar';
 import ClientBanner from 'components/client/Banner/ClientBanner';
-import Products from 'pages/client/products/Products';
+import ProductDetails from 'pages/client/products/ProductDetails';
 import ScrollButton from 'components/client/scrollButton/ScrollButton';
 import Breadcrumb from 'components/client/Breadcrumb/Breadcrum';
 import WOW from 'wowjs';
@@ -75,7 +75,7 @@ const ClientProduct = () => {
                 {/* <ClientBanner /> */}
 
                 {/* products */}
-                <Products />
+                <ProductDetails />
 
 
                 {/* footer */}

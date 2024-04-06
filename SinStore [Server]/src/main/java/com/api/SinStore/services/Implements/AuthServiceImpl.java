@@ -2,6 +2,7 @@ package com.api.SinStore.services.Implements;
 
 import com.api.SinStore.dtos.UserDto;
 import com.api.SinStore.entities.Address;
+import com.api.SinStore.entities.Cart;
 import com.api.SinStore.entities.Role;
 import com.api.SinStore.entities.User;
 import com.api.SinStore.enums.RoleName;
@@ -13,6 +14,7 @@ import com.api.SinStore.payloads.requests.SignUpRequest;
 import com.api.SinStore.payloads.responses.ApiResponse;
 import com.api.SinStore.payloads.responses.JwtResponse;
 import com.api.SinStore.repositories.AddressRepository;
+import com.api.SinStore.repositories.CartRepository;
 import com.api.SinStore.repositories.RoleRepository;
 import com.api.SinStore.repositories.UserRepository;
 import com.api.SinStore.services.Interfaces.AuthService;
@@ -43,6 +45,8 @@ public class AuthServiceImpl implements AuthService {
 
     private final AuthenticationManager authenticationManager;
 
+    private final CartRepository cartRepository;
+
     private final JwtProviderUtils jwtProviderUtils;
 
     @Override
@@ -70,6 +74,11 @@ public class AuthServiceImpl implements AuthService {
                     .country("")
                     .build();
             this.addressRepository.save(_address);
+
+            Cart _cart = Cart.builder()
+                    .userId(savedUser)
+                    .build();
+            this.cartRepository.save(_cart);
             return new ApiResponse("Create Successfully!", HttpStatus.CREATED);
         }
     }

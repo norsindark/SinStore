@@ -4,6 +4,7 @@ import TopBar from 'components/client/topbar/TopBar';
 import ClientNavbar from 'components/client/navbars/ClientNavbar';
 import ClientBanner from 'components/client/Banner/ClientBanner';
 import OfferItems from 'components/client/OfferItem/OfferItems';
+import ScrollButton from 'components/client/scrollButton/ScrollButton';
 import WOW from 'wowjs';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../assets/css/style.css';
@@ -82,7 +83,7 @@ const RestaurantTemplate = () => {
         <ClientNavbar />
 
         {/* banner */}
-        <ClientBanner />
+        {/* <ClientBanner /> */}
 
         {/* offer items */}
         <OfferItems/>
@@ -92,9 +93,7 @@ const RestaurantTemplate = () => {
         <ClientFooter />
 
         {/* Scroll Button */}
-        <div className="fp__scroll_btn">
-          go to top
-        </div>
+        <ScrollButton/>
       </body>
     </html>
   );

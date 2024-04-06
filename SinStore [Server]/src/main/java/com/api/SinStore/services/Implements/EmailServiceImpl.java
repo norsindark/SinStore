@@ -24,7 +24,7 @@ public class EmailServiceImpl implements EmailService {
             throws MessagingException, UnsupportedEncodingException {
         String toAddress = user.getEmail();
         String fromAddress = "dvan78281@gmail.com";
-        String senderName = "Medicine Market";
+        String senderName = "Sin Store";
         String subject = "Please click this url to change your password";
         String content = "Dear [[name]],<br>"
                 + "Please click the link below to change your password:<br>"

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Badge, Card, CardHeader, CardFooter, DropdownMenu, DropdownItem, UncontrolledDropdown, DropdownToggle, Media, Pagination, PaginationItem, PaginationLink, Progress, Table, Container, Row, UncontrolledTooltip, Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input } from "reactstrap";
 import Header from "components/dashboard/Headers/Header.js";
-import { getAllProducts, updateProduct, createProduct, deleteProduct } from '../../../services/product';
-import { getCategoryList } from "../../../services/category";
+import { getProducts, updateProduct, addNewProduct, deleteProduct } from "services/admin/products/product.service"
+import { getCategories } from "services/admin/categories/category.service";
+import { getWarehouses } from "services/admin/warehouses/warehouse.service";
 
 const TableProducts = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editedProduct, setEditedProduct] = useState(null);
   const [editedName, setEditedName] = useState('');
@@ -14,28 +16,39 @@ const TableProducts = () => {
   const [editedStatus, setEditedStatus] = useState('Active');
   const [editedDescription, setEditedDescription] = useState('');
   const [editedPrice, setEditedPrice] = useState('');
-  const [editedImage, setEditedImage] = useState('');
+  const [editedImageUrl, setEditedImage] = useState('');
+  const [editedWarehouseName, setEditedWarehouseName] = useState('');
+  const [editedImportQuantity, setEditedImportQuantity] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [newProductName, setNewProductName] = useState('');
   const [newProductCategory, setNewProductCategory] = useState('');
   const [newDescription, setNewDescription] = useState('');
   const [newPrice, setNewPrice] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage] = useState(5);
+  const [newImageUrl, setNewImageUrl] = useState('');
+  const [newWarehouseName, setNewWarehouseName] = useState('');
+  const [newImportQuantity, setNewImportQuantity] = useState('');
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const productsData = await getAllProducts();
+        const productsData = await getProducts();
         setProducts(productsData);
 
-        const categoriesData = await getCategoryList();
+        console.log(productsData);
+
+
+        const categoriesData = await getCategories();
         setCategories(categoriesData);
+
+        const warehousesData = await getWarehouses();
+        setWarehouses(warehousesData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
+
 
     fetchData();
   }, []);
@@ -43,28 +56,47 @@ const TableProducts = () => {
   const handleEditProduct = (product) => {
     setEditedProduct(product);
     setEditedName(product.name);
-    setEditedCategory(product.category_id);
+    setEditedCategory(product.categoryId);
     setEditedStatus(product.status);
+    setEditedDescription(product.description);
+    setEditedPrice(product.price);
+    setEditedImage(product.image);
+    setEditedImportQuantity(product.importQuantity);
     setIsModalOpen(true);
   };
 
   const handleSaveEdit = async () => {
     try {
-      await updateProduct(editedProduct.id, {
+      const data = {
+        id: editedProduct.id,
         name: editedName,
-        category_id: editedCategory,
-        status: editedStatus
-      });
+        categoryId: editedCategory,
+        status: editedStatus,
+        description: editedDescription,
+        price: editedPrice,
+        image: editedImageUrl,
+        importQuantity: editedImportQuantity
+      };
+
+      const response = await updateProduct(data);
+      if (!response) {
+        window.alert("Error updating product!");
+        return;
+      }
+
+      window.alert(response.message || "Product updated successfully!");
 
       const updatedProducts = products.map(product => {
         if (product.id === editedProduct.id) {
           return {
             ...product,
             name: editedName,
-            category_id: editedCategory,
+            categoryId: editedCategory,
             status: editedStatus,
             description: editedDescription,
             price: editedPrice,
+            image: editedImageUrl,
+            warehouseName: editedWarehouseName,
           };
         }
         return product;
@@ -84,23 +116,23 @@ const TableProducts = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     switch (name) {
-      case 'name':
+      case 'editedName':
         setEditedName(value);
         break;
-      case 'category_id':
+      case 'editedCategory':
         setEditedCategory(value);
         break;
-      case 'status':
-        setEditedStatus(value);
-        break;
-      case 'description':
+      case 'editedDescription':
         setEditedDescription(value);
         break;
-      case 'price':
+      case 'editedPrice':
         setEditedPrice(value);
         break;
-      case 'image_path':
+      case 'editedImage':
         setEditedImage(value);
+        break;
+      case 'editedImportQuantity':
+        setEditedImportQuantity(value);
         break;
       default:
         break;
@@ -109,13 +141,17 @@ const TableProducts = () => {
 
   const handleCreateProduct = async () => {
     try {
-      await createProduct({
+      const data = {
         name: newProductName,
-        category_id: newProductCategory,
+        price: parseFloat(newPrice),
+        categoryId: newProductCategory,
         description: newDescription,
-        price: newPrice,
-      });
-      const updatedProducts = await getAllProducts();
+        image: newImageUrl,
+        warehouseName: newWarehouseName,
+        importQuantity: parseInt(newImportQuantity)
+      };
+      await addNewProduct(data);
+      const updatedProducts = await getProducts();
       setProducts(updatedProducts);
       setIsCreateModalOpen(false);
 
@@ -129,11 +165,12 @@ const TableProducts = () => {
     const isConfirmed = window.confirm("Are you sure you want to delete this product?");
     if (isConfirmed) {
       try {
-        await deleteProduct(productId);
-        const updatedProducts = await getAllProducts();
-        setProducts(updatedProducts);
-
-        window.alert("Product deleted successfully!");
+        const response = await deleteProduct(productId);
+        if (response) {
+          window.alert("Product deleted successfully!");
+          const updatedProducts = await getProducts();
+          setProducts(updatedProducts);
+        }
       } catch (error) {
         console.error("Error deleting product:", error);
       }
@@ -144,11 +181,9 @@ const TableProducts = () => {
     setIsCreateModalOpen(!isCreateModalOpen);
   };
 
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
-
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const toggleDescription = () => {
+    setShowFullDescription(!showFullDescription);
+  };
 
   return (
     <>
@@ -173,13 +208,23 @@ const TableProducts = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {currentProducts.map(product => (
+                  {products.map(product => (
                     <tr key={product.id}>
                       <th scope="row">{product.id}</th>
                       <td>{product.name}</td>
-                      <td>{categories.find(category => category.id === product.category_id)?.name}</td>
+                      <td>{categories.find(category => category.id === product.categoryId)?.name}</td>
                       <td>{product.price}</td>
-                      <td>{product.description}</td>
+                      <td>
+                        <div onClick={toggleDescription}>
+                          {showFullDescription ? (
+
+                            <>{product.description}</>
+                          ) : (
+
+                            <>{product.description.slice(0, 50)}{product.description.length > 100 && '...'}</>
+                          )}
+                        </div>
+                      </td>
                       <td className="text-right">
                         <UncontrolledDropdown>
                           <DropdownToggle
@@ -206,40 +251,6 @@ const TableProducts = () => {
                   ))}
                 </tbody>
               </Table>
-              <CardFooter className="py-4">
-                <nav aria-label="...">
-                  <Pagination
-                    className="pagination justify-content-end mb-0"
-                    listClassName="justify-content-end mb-0"
-                  >
-                    <PaginationItem>
-                      <PaginationLink
-                        previous
-                        href="#"
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                        disabled={currentPage === 1}
-                      />
-                    </PaginationItem>
-                    {[...Array(Math.ceil(products.length / productsPerPage)).keys()].map(
-                      (number) => (
-                        <PaginationItem key={number} className={number + 1 === currentPage ? "active" : ""}>
-                          <PaginationLink href="#" onClick={() => paginate(number + 1)}>
-                            {number + 1}
-                          </PaginationLink>
-                        </PaginationItem>
-                      )
-                    )}
-                    <PaginationItem>
-                      <PaginationLink
-                        next
-                        href="#"
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                        disabled={currentPage === Math.ceil(products.length / productsPerPage)}
-                      />
-                    </PaginationItem>
-                  </Pagination>
-                </nav>
-              </CardFooter>
             </Card>
           </div>
         </Row>
@@ -252,7 +263,7 @@ const TableProducts = () => {
               <Label for="editedName">Name</Label>
               <Input
                 type="text"
-                name="name"
+                name="editedName"
                 id="editedName"
                 value={editedName}
                 onChange={handleChange}
@@ -262,7 +273,7 @@ const TableProducts = () => {
               <Label for="editedCategory">Category</Label>
               <Input
                 type="select"
-                name="category_id"
+                name="editedCategory"
                 id="editedCategory"
                 value={editedCategory}
                 onChange={handleChange}
@@ -276,22 +287,42 @@ const TableProducts = () => {
               </Input>
             </FormGroup>
             <FormGroup>
-              <Label for="description">Description</Label>
+              <Label for="editedDescription">Description</Label>
               <Input
                 type="text"
-                name="description"
-                id="description"
+                name="editedDescription"
+                id="editedDescription"
                 value={editedDescription}
                 onChange={handleChange}
               />
             </FormGroup>
             <FormGroup>
-              <Label for="price">Price</Label>
+              <Label for="editedPrice">Price</Label>
               <Input
                 type="text"
-                name="price"
-                id="price"
+                name="editedPrice"
+                id="editedPrice"
                 value={editedPrice}
+                onChange={handleChange}
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label for="editedImage">Image URL</Label>
+              <Input
+                type="text"
+                name="editedImage"
+                id="editedImage"
+                value={editedImageUrl}
+                onChange={handleChange}
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label for="editedImportQuantity">Import Quantity</Label>
+              <Input
+                type="text"
+                name="editedImportQuantity"
+                id="editedImportQuantity"
+                value={editedImportQuantity}
                 onChange={handleChange}
               />
             </FormGroup>
@@ -302,9 +333,10 @@ const TableProducts = () => {
           </ModalFooter>
         </Modal>
 
+
         {/* Modal for Create Product */}
         <Modal isOpen={isCreateModalOpen} toggle={toggleCreateModal}>
-          <ModalHeader toggle={toggleCreateModal}>Create Product</ModalHeader>
+          <ModalHeader toggle={toggleCreateModal}>Edit Product</ModalHeader>
           <ModalBody>
             <FormGroup>
               <Label for="newProductName">Name</Label>
@@ -352,13 +384,50 @@ const TableProducts = () => {
                 ))}
               </Input>
             </FormGroup>
-            {/* Add other form fields for description, price, image_path if needed */}
+            <FormGroup>
+              <Label for="newProductImage">Image URL</Label>
+              <Input
+                type="text"
+                name="newProductImage"
+                id="newProductImage"
+                value={newImageUrl}
+                onChange={(e) => setNewImageUrl(e.target.value)}
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label for="newProductWarehouse">Warehouse Name</Label>
+              <Input
+                type="select"
+                name="newProductWarehouse"
+                id="newProductWarehouse"
+                onChange={(e) => setNewWarehouseName(e.target.value)}
+              >
+                <option value="">Select a warehouse</option>
+                {warehouses.map(warehouse => (
+                  <option key={warehouse.id} value={warehouse.name}>
+                    {warehouse.name}
+                  </option>
+                ))}
+              </Input>
+            </FormGroup>
+            <FormGroup>
+              <Label for="newProductImportQuantity">Import Quantity</Label>
+              <Input
+                type="number"
+                name="newProductImportQuantity"
+                id="newProductImportQuantity"
+                value={newImportQuantity}
+                onChange={(e) => setNewImportQuantity(e.target.value)}
+              />
+            </FormGroup>
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={handleCreateProduct}>Create</Button>{' '}
+            <Button color="primary" onClick={handleCreateProduct}>Save</Button>{' '}
             <Button color="secondary" onClick={toggleCreateModal}>Cancel</Button>
           </ModalFooter>
         </Modal>
+
+
       </Container>
     </>
   );
