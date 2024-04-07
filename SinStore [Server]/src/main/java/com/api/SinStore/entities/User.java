@@ -75,6 +75,7 @@ public class User implements UserDetails {
     private String forgotPasswordToken;
 
     @OneToOne(cascade = CascadeType.REMOVE, mappedBy = "userId")
+    @JsonManagedReference
     private Cart cart;
 
     @Override

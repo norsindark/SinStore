@@ -1,21 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { getProducts } from 'services/admin/products/product.service';
-import Dropdown from 'react-bootstrap/Dropdown';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
-import Pagination from 'react-bootstrap/Pagination';
+import { Dropdown, Modal, Button, Pagination, Image, InputGroup, FormControl } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { Container, Row, Col } from 'reactstrap';
+import { addCartItem } from 'services/users/cart/userCart.service';
+import { useUserContext } from 'context/user';
 
 const Products = () => {
     const [products, setProducts] = useState([]);
+    const { user } = useUserContext();
     const [sortBy, setSortBy] = useState('name');
     const [show, setShow] = useState(false);
+    const [showProduct, setShowProduct] = useState({});
     const [showProductImage, setShowProductImage] = useState('');
     const [showProductName, setShowProductName] = useState('');
     const [showProductPrice, setShowProductPrice] = useState('');
     const [showProductQuantity, setShowProductQuantity] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(4);
+    const [quantity, setQuantity] = useState(1);
+    const [totalPrice, setTotalPrice] = useState(0);
 
 
     useEffect(() => {
@@ -29,6 +33,29 @@ const Products = () => {
         };
         fetchProducts();
     }, []);
+
+    useEffect(() => {
+        const initialTotalPrice = showProductPrice * quantity;
+        setTotalPrice(initialTotalPrice);
+    }, [show, showProductPrice, quantity]);
+
+    const handleAddToCart = async (showProduct) => {
+        try {
+            const data = {
+                userId: user.id,
+                productId: showProduct.id,
+                quantity: quantity
+            };
+            // console.log(data);
+            const response = await addCartItem(data);
+            if (response) {
+                window.alert(response.message)
+                handleClose();
+            }
+        } catch (error) {
+            console.error('Error adding item to cart:', error);
+        }
+    };
 
 
     const sortProducts = (type) => {
@@ -46,6 +73,7 @@ const Products = () => {
 
     const handleShow = (product) => {
         let totalQuantityAvailable = product.productWarehouses.reduce((total, productWarehouse) => total + productWarehouse.quantityAvailable, 0);
+        setShowProduct(product);
         setShowProductImage(product.image);
         setShowProductName(product.name);
         setShowProductPrice(product.price);
@@ -53,152 +81,172 @@ const Products = () => {
         setShow(true);
     };
 
+    const handleChange = (event) => {
+        const input = event.target.value;
+        const sanitizedInput = input.replace(/\D/g, '');
+        setQuantity(sanitizedInput);
+    };
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
+    const handleClose = () => {
+        setShow(false);
+        setQuantity(1);
+        setTotalPrice(0);
+    };
+
+    const calculateTotalPrice = (quantity, price) => {
+        return quantity * price;
+    };
+
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = products.slice(indexOfFirstItem, indexOfLastItem);
 
     const pageNumbers = [];
+
     for (let i = 1; i <= Math.ceil(products.length / itemsPerPage); i++) {
         pageNumbers.push(i);
     }
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
-    };
-
-    const handleClose = () => setShow(false);
-
     return (
-        <section className="fp__menu mt_95 xs_mt_45 mb_100 xs_mb_70">
-            <div className="container">
+        <Container className="my-4">
+            <Row className="mb-4">
+                <Col xs={12} className="mb-3">
+                    <Dropdown>
+                        <Dropdown.Toggle variant="secondary" id="sortDropdown">
+                            Sort By
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                            <Dropdown.Item
+                                className={`dropdown-item ${sortBy === 'name' ? 'active' : ''}`}
+                                onClick={() => sortProducts('name')}
+                            >
+                                A-Z
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                                className={`dropdown-item ${sortBy === 'priceLowToHigh' ? 'active' : ''}`}
+                                onClick={() => sortProducts('priceLowToHigh')}
+                            >
+                                Price: Low to High
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                                className={`dropdown-item ${sortBy === 'priceHighToLow' ? 'active' : ''}`}
+                                onClick={() => sortProducts('priceHighToLow')}
+                            >
+                                Price: High to Low
+                            </Dropdown.Item>
+                        </Dropdown.Menu>
+                    </Dropdown>
+                </Col>
 
-
-                <div className="row">
-                    <div className="col-12 mb-3">
-                        <Dropdown>
-                            <Dropdown.Toggle variant="secondary" id="sortDropdown">
-                                Sort By
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                                <Dropdown.Item
-                                    className={`dropdown-item ${sortBy === 'name' ? 'active' : ''}`}
-                                    onClick={() => sortProducts('name')}
-                                >
-                                    A-Z
-                                </Dropdown.Item>
-                                <Dropdown.Item
-                                    className={`dropdown-item ${sortBy === 'priceLowToHigh' ? 'active' : ''}`}
-                                    onClick={() => sortProducts('priceLowToHigh')}
-                                >
-                                    Price: Low to High
-                                </Dropdown.Item>
-                                <Dropdown.Item
-                                    className={`dropdown-item ${sortBy === 'priceHighToLow' ? 'active' : ''}`}
-                                    onClick={() => sortProducts('priceHighToLow')}
-                                >
-                                    Price: High to Low
-                                </Dropdown.Item>
-                            </Dropdown.Menu>
-                        </Dropdown>
-                    </div>
-
-                    {currentItems.map(product => (
-                        <div key={product.id} className="col-xl-3 col-sm-6 col-lg-4 burger pizza wow fadeInUp" data-wow-duration="1s">
-                            <div className="fp__menu_item">
-                                <div className="fp__menu_item_img">
-                                    <img src={product.image} alt={product.name} className="img-fluid w-100" />
-                                    <a className="category" href="#">{product.category}</a>
-                                </div>
-                                <div className="fp__menu_item_text">
-                                    <p className="rating">
-                                        {[...Array(5)].map((_, index) => (
-                                            <i key={index} className="fas fa-star"></i>
-                                        ))}
-                                    </p>
-                                    <p>
-                                        In Stocks: {product.productWarehouses.map(productWarehouse => (
-                                            <span key={productWarehouse.id}>{productWarehouse.quantityAvailable}</span>
-                                        ))}
-                                    </p>
-
-
-                                    <Link className="title" to={`/products/details/${product.slug}`}>{product.name}</Link>
-                                    <h5 className="price">{product.price ? product.price : 'N/A'} VNĐ</h5>
-
-                                    <ul className="d-flex flex-wrap justify-content-center">
-                                        <li>
-                                            <a data-bs-toggle="modal" data-bs-target="#cartModal" onClick={() => handleShow(product)}><i className="fas fa-shopping-basket"></i></a>
-                                        </li>
-                                    </ul>
-                                </div>
+                {currentItems.map(product => (
+                    <Col key={product.id} xl={3} sm={6} lg={4} className="burger pizza wow fadeInUp" data-wow-duration="1s">
+                        <div className="fp__menu_item">
+                            <div className="fp__menu_item_img">
+                                <Image src={product.image} alt={product.name} fluid />
+                                <Link className="category" to="#">{product.category}</Link>
                             </div>
-                        </div>
-                    ))}
-                </div>
-
-
-                <div className="fp__pagination mt_35">
-                    <div className="row">
-                        <div className="col-12">
-                            <nav aria-label="...">
-                                <Pagination >
-                                    <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
-                                    {pageNumbers.map(number => (
-                                        <Pagination.Item key={number} active={number === currentPage} onClick={() => handlePageChange(number)} >
-                                            {number}
-                                        </Pagination.Item>
+                            <div className="fp__menu_item_text">
+                                <div className="rating">
+                                    {[...Array(5)].map((_, index) => (
+                                        <i key={index} className="fas fa-star"></i>
                                     ))}
-                                    <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === pageNumbers.length} />
-                                </Pagination>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="fp__cart_popup">
-                <Modal show={show} onHide={handleClose} centered>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Maxican Pizza Test Better</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <div className="fp__cart_popup_img">
-                            <img src={showProductImage} alt={showProductName} className="img-fluid w-100" />
-                        </div>
-                        <div className="fp__cart_popup_text">
-                            <p className="rating">
-                                {[...Array(5)].map((_, index) => (
-                                    <i key={index} className="fas fa-star"></i>
-                                ))}
-                                <h4 className="price">{showProductPrice}</h4>
-                            </p>
-                            <p>
-                                In Stocks: {showProductQuantity}
-                               
-                            </p>
-                        </div>
-                        <div class="details_quentity">
-                            <h5>select quentity</h5>
-                            <div class="quentity_btn_area d-flex flex-wrapa align-items-center">
-                                <div class="quentity_btn">
-                                    <button class="btn btn-danger"><i class="fas fa-minus"></i></button>
-                                    <input type="text" placeholder="1" />
-                                    <button class="btn btn-success"><i class="fas fa-plus"></i></button>
+                                </div>
+                                <p>
+                                    In Stocks: {product.productWarehouses.map(productWarehouse => (
+                                        <span key={productWarehouse.id}>{productWarehouse.quantityAvailable}</span>
+                                    ))}
+                                </p>
+
+                                <Link className="title" to={`/products/details/${product.slug}`}>{product.name}</Link>
+                                <h5 className="price">{product.price ? product.price : 'N/A'} VNĐ</h5>
+
+                                <div className="d-flex flex-wrap justify-content-center">
+                                    <Button data-bs-toggle="modal" data-bs-target="#cartModal" onClick={() => handleShow(product)}><i className="fas fa-shopping-basket"></i></Button>
                                 </div>
                             </div>
                         </div>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose}>
-                            Close
-                        </Button>
-                        <Button variant="primary" onClick={handleClose}>
-                            Add to Cart
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
-            </div>
-        </section>
+                    </Col>
+                ))}
+            </Row>
+
+            <Row className="mb-4">
+                <Col xs={12}>
+                    <nav aria-label="...">
+                        <Pagination className="d-flex flex-wrap justify-content-center" >
+                            <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
+                            {pageNumbers.map(number => (
+                                <Pagination.Item key={number} active={number === currentPage} onClick={() => handlePageChange(number)} >
+                                    {number}
+                                </Pagination.Item>
+                            ))}
+                            <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === pageNumbers.length} />
+                        </Pagination>
+                    </nav>
+                </Col>
+            </Row>
 
 
+            {/* modal */}
+            <Modal show={show} onHide={handleClose} centered className="fp__cart_popup">
+                <Modal.Header closeButton>
+                    <Modal.Title >{showProductName}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Row>
+                        <Col md={12}>
+                            <div className="fp__cart_popup_img">
+                                <Image src={showProductImage} alt={showProductName} fluid />
+                            </div>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col md={6}>
+                            <div className="fp__cart_popup_text">
+                                <p className="rating">
+                                    {[...Array(5)].map((_, index) => (
+                                        <i key={index} className="fas fa-star"></i>
+                                    ))}
+                                    <h4 className="price">{showProductPrice} VNĐ</h4>
+                                </p>
+                                <p>
+                                    <span>In Stocks: {showProductQuantity} </span>
+                                </p>
+
+                                <p>
+                                    <span>Total Price: {totalPrice} VNĐ</span>
+                                </p>
+
+                            </div>
+                        </Col>
+                        <Col md={8}>
+                            <Row className="details_quentity">
+                                <h5>select quantity</h5>
+                                <Row className="quentity_btn_area d-flex flex-wrapa align-items-center">
+                                    <div className="quentity_btn">
+                                        {/* <Button variant="primary" onClick={decreaseQuantity}><i className="fas fa-minus"></i></Button> */}
+                                        <InputGroup className=' d-flex align-item-center'>
+                                            <FormControl type="number" placeholder="Enter quantity" value={quantity} onChange={handleChange} />
+                                        </InputGroup>
+                                        {/* <Button variant="success"  onClick={increaseQuantity}><i className="fas fa-plus"></i></Button> */}
+                                    </div>
+                                </Row>
+                            </Row>
+                        </Col>
+                    </Row>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={() => handleAddToCart(showProduct)}>
+                        Add to Cart
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        </Container>
     );
 }
 

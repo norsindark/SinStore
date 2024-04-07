@@ -1,5 +1,6 @@
 package com.api.SinStore.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,12 +21,13 @@ public class CartItem {
     @Column(name = "id", length = 36, nullable = false)
     private String id;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "cart_id", referencedColumnName = "id")
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "cartId", referencedColumnName = "id")
+    @JsonBackReference
     private Cart cartId;
 
     @OneToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "product_id", referencedColumnName = "id")
+    @JoinColumn(name = "productId", referencedColumnName = "id")
     private Product productId;
 
     private int quantity;
