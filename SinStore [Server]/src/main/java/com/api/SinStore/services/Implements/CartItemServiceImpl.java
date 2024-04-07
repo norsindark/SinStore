@@ -67,4 +67,14 @@ public class CartItemServiceImpl implements CartItemService {
         this.cartItemRepository.save(_cartItem);
         return new ApiResponse("Item added to cart successfully!", HttpStatus.OK);
     }
+
+    @Override
+    public ApiResponse removeCartItem(String cartItemId) {
+        Optional<CartItem> cartItem = cartItemRepository.findById(cartItemId);
+        if (cartItem.isEmpty()) {
+            return new ApiResponse("Item not found", HttpStatus.NOT_FOUND);
+        }
+        this.cartItemRepository.delete(cartItem.get());
+        return new ApiResponse("Item removed successfully!", HttpStatus.OK);
+    }
 }

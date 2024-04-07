@@ -20,7 +20,7 @@ import "../../assets/css/responsive.css";
 
 
 
-const Cart = () => {
+const CartLayout = () => {
 
     useEffect(() => {
     }, []);
@@ -84,4 +84,4 @@ const Cart = () => {
     );
 };
 
-export default Cart;
+export default CartLayout;

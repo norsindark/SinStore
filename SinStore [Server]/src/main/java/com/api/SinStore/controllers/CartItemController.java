@@ -21,4 +21,11 @@ public class CartItemController {
     public ResponseEntity<ApiResponse> addCartItem(@RequestBody CartItemRequest request) {
         return ResponseEntity.ok(this.cartItemService.addCartItem(request));
     }
+
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @DeleteMapping("/remove/{cartItemId}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse> removeCartItem(@PathVariable String cartItemId) {
+        return ResponseEntity.ok(this.cartItemService.removeCartItem(cartItemId));
+    }
 }

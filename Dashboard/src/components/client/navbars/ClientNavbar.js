@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
 import logoImg from "../../../assets/img/logo.png";
-// import logoImg from "../../../assets/img/logo/logosin.jpg";
 import { Link } from 'react-router-dom';
 import { useUserContext } from 'context/user';
 import { Navbar, NavbarBrand, Nav, NavItem, NavLink, Collapse, NavbarToggler, InputGroup, InputGroupAddon, InputGroupText, Input } from 'reactstrap';
@@ -39,9 +38,10 @@ const ClientNavbar = () => {
   }, [user]);
 
   return (
-    <Navbar light expand="md" className="main_menu">
+
+    <Navbar light expand="md" className="navbar navbar-expand-lg main_menu" style={{ position: 'fixed', width: '100%', top: 50 }}>
       <div className="container">
-        <NavbarBrand href="/">
+        <NavbarBrand href="/" className='navbar-brand '>
           <img src={logoImg} alt="FoodPark" className="img-fluid" />
         </NavbarBrand>
         <NavbarToggler onClick={() => setIsOpen(!isOpen)} />
@@ -70,7 +70,7 @@ const ClientNavbar = () => {
               </InputGroup>
             </NavItem>
             <NavItem className="nav-item">
-              <NavLink href="#" className="cart_icon" style={{ marginLeft: '24px' }}>
+              <NavLink tag={Link} to="/cart" className="cart_icon" style={{ marginLeft: '24px' }}>
                 <FaShoppingBasket />
                 <span style={{ marginLeft: '4px', marginTop: '32px' }}>{totalItems}</span>
               </NavLink>

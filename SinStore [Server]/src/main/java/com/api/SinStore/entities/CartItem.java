@@ -21,12 +21,12 @@ public class CartItem {
     @Column(name = "id", length = 36, nullable = false)
     private String id;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "cartId", referencedColumnName = "id")
     @JsonBackReference
     private Cart cartId;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne
     @JoinColumn(name = "productId", referencedColumnName = "id")
     private Product productId;
 
