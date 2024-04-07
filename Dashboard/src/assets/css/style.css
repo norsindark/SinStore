@@ -1304,8 +1304,8 @@ button {
 /* CART POPUT START */
 .fp__cart_popup .btn-close {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 20px;
+    right: 20px;
     border: 1px solid var(--colorPrimary);
     overflow: hidden;
     width: 20px;
@@ -1323,6 +1323,18 @@ button {
     -ms-transition: all linear .3s;
     -o-transition: all linear .3s;
 }
+
+.fp__cart_popup .btn-close::after {
+    content: 'X';
+    font-weight: 700;
+    color: red; /* Màu đỏ */
+    font-size: 14px; /* Kích thước phù hợp */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 
 .fp__cart_popup .btn-close:hover {
     background: var(--colorPrimary);
