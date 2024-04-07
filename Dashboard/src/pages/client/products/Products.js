@@ -5,10 +5,11 @@ import { Link } from 'react-router-dom';
 import { Container, Row, Col } from 'reactstrap';
 import { addCartItem } from 'services/users/cart/userCart.service';
 import { useUserContext } from 'context/user';
+import toast, { Toaster } from 'react-hot-toast';
 
 const Products = () => {
     const [products, setProducts] = useState([]);
-    const { user } = useUserContext();
+    const { user, getUserByAccessToken } = useUserContext();
     const [sortBy, setSortBy] = useState('name');
     const [show, setShow] = useState(false);
     const [showProduct, setShowProduct] = useState({});
@@ -48,9 +49,12 @@ const Products = () => {
             };
             // console.log(data);
             const response = await addCartItem(data);
-            if (response) {
-                window.alert(response.message)
+            if (response.httpStatus === "OK") {
+                toast.success(response.message, { duration: 2000 }, { position: 'top-right' });
+                getUserByAccessToken()
                 handleClose();
+            } else if (response.httpStatus !== "OK") {
+                toast.error(response.message, { duration: 2000 }, { position: 'top-right' });
             }
         } catch (error) {
             console.error('Error adding item to cart:', error);
@@ -110,6 +114,7 @@ const Products = () => {
     for (let i = 1; i <= Math.ceil(products.length / itemsPerPage); i++) {
         pageNumbers.push(i);
     }
+
     return (
         <Container className="my-4">
             <Row className="mb-4">

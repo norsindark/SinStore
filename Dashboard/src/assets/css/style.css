@@ -4016,7 +4016,7 @@ button {
     border-right: 1px solid #eee !important;
     display: flex;
     width: 100%;
-    justify-content: space-between;
+    /* justify-content: space-between; */
 }
 
 .fp__cart_list table tbody tr:first-child {
@@ -4025,12 +4025,12 @@ button {
 }
 
 .fp__cart_list .fp__pro_img {
-    width: 130px;
+    width: 200px;
     padding: 10px;
 }
 
 .fp__cart_list .fp__pro_name {
-    width: 240px;
+    width: 180px;
 }
 
 .fp__cart_list td.fp__pro_name {
@@ -4049,12 +4049,12 @@ button {
 }
 
 .fp__cart_list .fp__pro_select {
-    width: 184px;
+    width: 260px;
 }
 
 .fp__cart_list .fp__pro_tk,
 .fp__cart_list .fp__pro_status {
-    width: 102px;
+    width: 180px;
 }
 
 .fp__cart_list .fp__pro_tk h6,
@@ -4072,6 +4072,18 @@ button {
 .fp__cart_list .fp__pro_icon {
     width: 95px;
     border-right: none !important;
+    
+}
+.fp__cart_list .fp__pro_icon .removeIcon {
+    border-right: none !important;
+    cursor: pointer;
+    color: red !important;
+}
+
+.fp__cart_list .fp__pro_icon .removeIcon:hover {
+    border-right: none !important;
+    cursor: pointer;
+    color: red !important;
 }
 
 .fp__cart_list .fp__pro_icon a {

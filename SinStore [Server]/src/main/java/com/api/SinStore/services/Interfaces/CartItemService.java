@@ -5,4 +5,6 @@ import com.api.SinStore.payloads.responses.ApiResponse;
 
 public interface CartItemService {
     ApiResponse addCartItem(CartItemRequest request);
+
+    ApiResponse removeCartItem(String cartItemId);
 }

@@ -33,4 +33,18 @@ public class Cart {
     @OneToMany(mappedBy = "cartId")
     @JsonManagedReference
     private List<CartItem> cartItems;
+
+
+    @Column(name = "total_price", nullable = true)
+    private Double totalPrice;
+
+    @PostLoad
+    public void updateTotalPrice() {
+        this.totalPrice = cartItems.stream()
+                .mapToDouble(item -> item.getQuantity() * item.getProductId().getPrice())
+                .sum();
+    }
+
+    @Column(name = "VAT", nullable = true)
+    private Double VAT = 0.1;
 }
