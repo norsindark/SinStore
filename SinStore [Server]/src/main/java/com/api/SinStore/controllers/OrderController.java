@@ -3,6 +3,7 @@ package com.api.SinStore.controllers;
 import com.api.SinStore.payloads.requests.OrderRequest;
 import com.api.SinStore.payloads.responses.ApiResponse;
 import com.api.SinStore.services.Interfaces.OrderService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +19,7 @@ public class OrderController {
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> createNewOrder(@RequestBody OrderRequest request) {
+    public ResponseEntity<ApiResponse> createNewOrder(@Valid @RequestBody OrderRequest request) {
         return ResponseEntity.ok(orderService.createNewOrder(request));
     }
 }

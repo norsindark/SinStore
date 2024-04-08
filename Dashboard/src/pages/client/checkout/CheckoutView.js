@@ -59,42 +59,6 @@ function CheckoutView() {
     };
 
     const handleCreateOrder = async () => {
-        if (!editedFullname || !editedCountry || !editedCity || !editedStreet || !editedPostalCode || !editedPhone || !editedEmail) {
-            toast.error("Please fill in all fields.");
-            return;
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(editedEmail)) {
-            toast.error("Please enter a valid email address.");
-            return;
-        }
-
-        const nameRegex = /^[A-Za-z\sÀ-ỹ]+$/;
-        if (!nameRegex.test(editedFullname)) {
-            toast.error("Name should only contain letters.");
-            return;
-        }
-
-        const phoneRegex = /^\d+$/;
-        if (!phoneRegex.test(editedPhone)) {
-            toast.error("Phone number should only contain digits.");
-            return;
-        }
-
-        const maxLength = 255;
-        if (editedFullname.length > maxLength ||
-            editedCountry.length > maxLength ||
-            editedCity.length > maxLength ||
-            editedStreet.length > maxLength ||
-            editedPostalCode.length > maxLength ||
-            editedPhone.length > maxLength ||
-            editedEmail.length > maxLength || 
-            editedNotes.length > maxLength) {
-            toast.error("Each field should not exceed 255 characters.");
-            return;
-        }
-
         const data = {
             userId: user ? user.id : 0,
             fullName: editedFullname,
@@ -108,6 +72,7 @@ function CheckoutView() {
         };
 
         const response = await createNewOrder(data);
+        if(response === undefined) return;
         if (response.httpStatus === "CREATED") {
             toast.success(response.message);
         } else if (response.httpStatus !== "CREATED"){
