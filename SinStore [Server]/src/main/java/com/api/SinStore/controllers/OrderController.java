@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("api/v1/client/orders")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-public class CartController {
+public class OrderController {
 
     private final OrderService orderService;
 

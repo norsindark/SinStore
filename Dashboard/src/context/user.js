@@ -12,6 +12,8 @@ export default function UserProvider({ children }) {
     const [cartItems, setCartItems] = useState([]);
     const [cart, setCart] = useState([]);
     const [address, setAddress] = useState(null);
+    const [orders, setOrders] = useState([]);
+    const [orderItems, setOrderItems] = useState([]);
 
     const getUserByAccessToken = async () => {
         try {
@@ -21,6 +23,8 @@ export default function UserProvider({ children }) {
             setCartItems(userData.cart?.cartItems || []);
             setCart(userData.cart || []);
             setAddress(userData.address);
+            setOrders(userData.orders || []);
+            setOrderItems(userData.orders.flatMap(order => order.orderItems || []));
         } catch (error) {
             console.error("Error fetching user data:", error);
         }
@@ -28,7 +32,7 @@ export default function UserProvider({ children }) {
 
     useEffect(() => {
         getUserByAccessToken();
-    }, []); 
+    }, []);
 
     return (
         <UserContext.Provider value={{
@@ -36,6 +40,8 @@ export default function UserProvider({ children }) {
             cartItems,
             cart,
             address,
+            orders,
+            orderItems,
             getUserByAccessToken
         }}>
             {children}

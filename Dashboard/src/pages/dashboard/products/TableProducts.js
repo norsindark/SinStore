@@ -4,6 +4,7 @@ import Header from "components/dashboard/Headers/Header.js";
 import { getProducts, updateProduct, addNewProduct, deleteProduct } from "services/admin/products/product.service"
 import { getCategories } from "services/admin/categories/category.service";
 import { getWarehouses } from "services/admin/warehouses/warehouse.service";
+import { set } from "js-cookie";
 
 const TableProducts = () => {
   const [products, setProducts] = useState([]);
@@ -48,8 +49,6 @@ const TableProducts = () => {
         console.error("Error fetching data:", error);
       }
     };
-
-
     fetchData();
   }, []);
 
@@ -101,6 +100,9 @@ const TableProducts = () => {
         }
         return product;
       });
+
+      toggleCreateModal();
+
 
       setProducts(updatedProducts);
       setIsModalOpen(false);
@@ -178,6 +180,13 @@ const TableProducts = () => {
   };
 
   const toggleCreateModal = () => {
+    setNewProductName('');
+    setNewProductCategory('');
+    setNewDescription('');
+    setNewPrice('');
+    setNewImageUrl('');
+    setNewWarehouseName('');
+    setNewImportQuantity('');
     setIsCreateModalOpen(!isCreateModalOpen);
   };
 

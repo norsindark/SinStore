@@ -252,6 +252,42 @@ button {
     position: relative;
 }
 
+.search-results {
+    position: absolute;
+    top: calc(100% + 0px);
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.search-result {
+    padding: 2px;
+}
+
+.search-result .image-product {
+    width: 80px !important;
+    height: 60px !important;
+    margin-right: 12px;
+    border-radius: 12px;
+}
+
+
+
+.search-result a {
+    display: flex;
+    align-items: center;
+    color: #333;
+    text-decoration: none;
+}
+
+.search-result a:hover {
+    text-decoration: none;
+}
+
+
 .main_menu .navbar-nav .nav-item .nav-link {
     font-size: 16px;
     font-weight: 600;
@@ -1327,8 +1363,10 @@ button {
 .fp__cart_popup .btn-close::after {
     content: 'X';
     font-weight: 700;
-    color: red; /* Màu đỏ */
-    font-size: 14px; /* Kích thước phù hợp */
+    color: red;
+    /* Màu đỏ */
+    font-size: 14px;
+    /* Kích thước phù hợp */
     position: absolute;
     top: 50%;
     left: 50%;
@@ -4072,8 +4110,9 @@ button {
 .fp__cart_list .fp__pro_icon {
     width: 95px;
     border-right: none !important;
-    
+
 }
+
 .fp__cart_list .fp__pro_icon .removeIcon {
     border-right: none !important;
     cursor: pointer;
@@ -4344,6 +4383,14 @@ button {
     text-align: center;
     margin-top: 20px;
     padding: 10px 20px !important;
+}
+
+.fp__cart_list_footer_button a:hover {
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+    padding: 10px 20px !important;
+    cursor: pointer;
 }
 
 .fp__cart_list_footer_button a::after,

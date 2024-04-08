@@ -1,23 +1,32 @@
 import React, { useEffect, useState, useContext } from 'react';
 import logoImg from "../../../assets/img/logo.png";
 import { Link } from 'react-router-dom';
-import { useUserContext } from 'context/user';
-import { Navbar, NavbarBrand, Nav, NavItem, NavLink, Collapse, NavbarToggler, InputGroup, InputGroupAddon, InputGroupText, Input } from 'reactstrap';
+import { Navbar, NavbarBrand, Nav, NavItem, NavLink, Collapse, NavbarToggler, InputGroup, InputGroupAddon, InputGroupText, Input, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { FaSearch, FaShoppingBasket, FaUser } from 'react-icons/fa';
+import { getProducts } from 'services/admin/products/product.service';
+import { useUserContext } from 'context/user';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
 const ClientNavbar = () => {
-  const { user, cartItems, cart, address, getUserByAccessToken } = useUserContext();
   const [totalItems, setTotalItems] = useState(0);
   const [currentUser, setCurrentUser] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [searchProduct, setSearchProduct] = useState('');
+  const { user, cart } = useUserContext();
 
   useEffect(() => {
     const fetchData = async () => {
-      await getUserByAccessToken();
+      try {
+        const productsData = await getProducts();
+        setProducts(productsData);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
     };
-
     fetchData();
   }, []);
 
@@ -36,6 +45,51 @@ const ClientNavbar = () => {
       setCurrentUser(null);
     }
   }, [user]);
+
+  useEffect(() => {
+    setSearchProduct(searchResults.length);
+    setDropdownOpen(searchResults.length > 0);
+  }, [searchResults]);
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleClickOutside = (event) => {
+    if (!event.target.classList.contains('search-results') && !event.target.classList.contains('search-result') && !event.target.classList.contains('image-product') && !event.target.classList.contains('search-container') && !event.target.classList.contains('input-group') && !event.target.classList.contains('input-group-append') && !event.target.classList.contains('input-group-text') && !event.target.classList.contains('form-control') && !event.target.classList.contains('search-icon') && !event.target.classList.contains('search-results')) {
+      setSearchResults([]);
+      setIsOpen(false);
+    }
+  };
+
+
+  const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
+
+  const handleSearchInputChange = (e) => {
+    const term = e.target.value;
+    setSearchTerm(term);
+    const results = products.filter(product =>
+      product.name.toLowerCase().includes(term.toLowerCase())
+    ).slice(0, 5);
+    setSearchResults(results);
+  };
+
+  const handleClickProduct = () => {
+    setSearchTerm('');
+    setSearchResults([]);
+    setIsOpen(false);
+    window.scrollTo(0, 400);
+  };
+
+  const truncateString = (str, maxLength) => {
+    if (str.length > maxLength) {
+      return str.substring(0, maxLength) + '...';
+    }
+    return str;
+  };
 
   return (
 
@@ -61,14 +115,32 @@ const ClientNavbar = () => {
             </NavItem>
           </Nav>
           <Nav className="menu_icon d-flex flex-wrap" navbar>
-            <NavItem className="nav-item">
+            <NavItem className="nav-item" >
               <InputGroup>
-                <Input placeholder="Search..." />
+                <Input
+                  placeholder="Search..."
+                  value={searchTerm}
+                  onChange={handleSearchInputChange}
+                />
                 <InputGroupAddon addonType="append">
                   <InputGroupText><FaSearch /></InputGroupText>
                 </InputGroupAddon>
               </InputGroup>
+              {dropdownOpen && (
+                <div className="search-container">
+                  <div className="search-results">
+                    {searchResults.map((product, index) => (
+                      <div key={index} className="search-result" name='searchBar'>
+                        <Link className="search-result" onClick={handleClickProduct} to={`/products/details/${product.slug}`}>
+                          <img className='image-product' src={product.image} /> {truncateString(product.name, 10)}
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </NavItem>
+
             <NavItem className="nav-item">
               <NavLink tag={Link} to="/cart" className="cart_icon" style={{ marginLeft: '24px' }}>
                 <FaShoppingBasket />
@@ -77,7 +149,12 @@ const ClientNavbar = () => {
             </NavItem>
             <NavItem className="nav-item">
               <NavLink>
-                <FaUser />{currentUser ? currentUser.fullName : ''}
+                {/* <div class="avatar avatar-xl position-relative"
+                  style= {{maxWidth: '40px', maxHeight: '40px', minWidth: '40px !important'  }}>
+                  <img src={currentUser ? currentUser.image : ''} alt="Product Image"
+                    class="img-fluid" />
+                </div> */}
+                <FaUser /> {currentUser ? currentUser.fullName : ''}
               </NavLink>
             </NavItem>
           </Nav>

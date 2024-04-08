@@ -18,7 +18,7 @@ const Products = () => {
     const [showProductPrice, setShowProductPrice] = useState('');
     const [showProductQuantity, setShowProductQuantity] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(4);
+    const [itemsPerPage] = useState(8);
     const [quantity, setQuantity] = useState(1);
     const [totalPrice, setTotalPrice] = useState(0);
 
@@ -115,6 +115,14 @@ const Products = () => {
         pageNumbers.push(i);
     }
 
+    const truncateString = (str, maxLength) => {
+        if (str.length > maxLength) {
+          return str.substring(0, maxLength) + '...';
+        }
+        return str;
+      };
+    
+
     return (
         <Container className="my-4">
             <Row className="mb-4">
@@ -165,7 +173,7 @@ const Products = () => {
                                     ))}
                                 </p>
 
-                                <Link className="title" to={`/products/details/${product.slug}`}>{product.name}</Link>
+                                <Link className="title" to={`/products/details/${product.slug}`}>{truncateString(product.name, 10)}</Link>
                                 <h5 className="price">{product.price ? product.price : 'N/A'} VNĐ</h5>
 
                                 <div className="d-flex flex-wrap justify-content-center">
