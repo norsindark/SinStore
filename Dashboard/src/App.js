@@ -4,6 +4,7 @@ import RestaurantTemplate from "layouts/client/RestaurantTemplate";
 import ClientProduct from "layouts/client/ClientProduct";
 import ProductDetails from "layouts/client/ProductDetails";
 import CartLayout from "layouts/client/CartLayout";
+import CheckoutLayout from "layouts/client/CheckoutLayout";
 
 import "assets/plugins/nucleo/css/nucleo.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -18,8 +19,9 @@ const App = () => {
   return (
     <Routes>
       <Route path="/*" element={<RestaurantTemplate />} />
-      <Route path="/products/*" element={<ClientProduct />} />
+      <Route path="/products" element={<ClientProduct />} />
       <Route path="/products/details/:productSlug" element={<ProductDetails />} />
+      <Route path="/checkout" element={<CheckoutLayout />} />
       <Route path="/cart" element={<CartLayout />} />
       <Route path="/admin/*" element={<AdminLayout />} />
       <Route path="/auth/*" element={<AuthLayout />} />

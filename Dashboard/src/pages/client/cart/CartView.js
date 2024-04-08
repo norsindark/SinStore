@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Table, Input, Button, Container, Row, Col } from 'reactstrap';
+import { useNavigate } from 'react-router-dom';
 import { UserContext } from 'context/user';
 import { addCartItem, removeCartItem } from 'services/users/cart/userCart.service';
 import { Link } from 'react-router-dom';
@@ -8,6 +9,7 @@ import toast, { Toaster } from 'react-hot-toast';
 const CartView = () => {
     const { cartItems, user, getUserByAccessToken, cart } = useContext(UserContext);
     const [quantities, setQuantities] = useState({});
+    const navigate = useNavigate();
 
     const updateQuantity = async (productId, newQuantity) => {
         try {
@@ -56,6 +58,13 @@ const CartView = () => {
         return integerPart + (decimalPart ? ',' + decimalPart : '');
     };
 
+    const handleCheckoutClick = () => {
+        const confirmCheckout = window.confirm('Are you sure you want to checkout?');
+        if (confirmCheckout) {
+            navigate("/checkout", { replace: true });
+        }
+    };
+
     return (
         <Container className="my-8">
             <Row className="mb-4">
@@ -85,7 +94,7 @@ const CartView = () => {
                                                     <Link to={`/products/details/${item.productId.slug}`}>{item.productId.name}</Link>
                                                 </td>
                                                 <td className="fp__pro_status">
-                                                    <h6>${item.productId.price}</h6>
+                                                    <h6>{formatCurrency(item.productId.price)} VNĐ</h6>
                                                 </td>
                                                 <td className="fp__pro_select">
                                                     <div class="quentity_btn">
@@ -101,7 +110,7 @@ const CartView = () => {
                                                     </div>
                                                 </td>
                                                 <td className="fp__pro_tk">
-                                                    <h6>{formatCurrency(item.productId.price * currentQuantity)}</h6>
+                                                    <h6>{formatCurrency(item.productId.price * currentQuantity)} VNĐ</h6>
                                                 </td>
                                                 <td className="fp__pro_icon">
                                                     <span className="clear_all">
@@ -127,10 +136,10 @@ const CartView = () => {
                             </>
                         ) : null}
                         <form>
-                            <Input type="text" placeholder="Coupon Code" />
-                            <Button type="submit">Apply</Button>
+                            {/* <Input type="text" placeholder="Coupon Code" /> */}
+                            {/* <Button type="submit">Apply</Button> */}
                         </form>
-                        <a className="common_btn" href="#">Checkout</a>
+                        <a className="common_btn" onClick={handleCheckoutClick}>Checkout</a>
                     </div>
                 </Col>
 

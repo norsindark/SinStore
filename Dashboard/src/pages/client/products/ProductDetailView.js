@@ -69,6 +69,13 @@ const ProductDetails = () => {
         return <div>Loading...</div>;
     }
 
+    const truncateString = (str, maxLength) => {
+        if (str.length > maxLength) {
+            return str.substring(0, maxLength) + '...';
+        }
+        return str;
+    };
+
     return (
         <Container className="fp__menu_details mt_115 xs_mt_85 mb_95 xs_mb_65">
             <Row id='details'>
@@ -86,7 +93,7 @@ const ProductDetails = () => {
 
                 <Col lg="7" className="wow fadeInUp" data-wow-duration="1s">
                     <div className="fp__menu_details_text">
-                        <h2>{product.name || "Product Name"}</h2>
+                        <h2>{truncateString(product.name, 30) || "Product Name"}</h2>
                         <h3 className="price">{product.price || ""} VNĐ </h3>
                         <p>
                             In Stocks: {product.productWarehouses.map(productWarehouse => (
@@ -164,7 +171,7 @@ const ProductDetails = () => {
                             </div>
                             <div className="fp__menu_item_text">
                                 <Link className="title" to={`/products/details/${relatedProduct.slug}`} onClick={() => window.scrollTo(0, 500)}>
-                                    {relatedProduct.name}
+                                    {truncateString(relatedProduct.name, 10)}
                                 </Link>
                                 <h5 className="price">${relatedProduct.price || ""}</h5>
                             </div>

@@ -27,7 +27,6 @@ import java.util.UUID;
 public class User implements UserDetails {
     @Id
     @UuidGenerator
-//    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", length = 36, nullable = false)
     private String id;
 
@@ -77,6 +76,10 @@ public class User implements UserDetails {
     @OneToOne(cascade = CascadeType.REMOVE, mappedBy = "userId")
     @JsonManagedReference
     private Cart cart;
+
+    @OneToMany(mappedBy = "userId", cascade = CascadeType.REMOVE)
+    @JsonManagedReference
+    private List<Order> orders;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
