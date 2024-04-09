@@ -3,9 +3,7 @@ package com.api.SinStore.services.Interfaces;
 import com.api.SinStore.entities.Order;
 import com.api.SinStore.payloads.requests.OrderRequest;
 import com.api.SinStore.payloads.responses.ApiResponse;
-import com.api.SinStore.payloads.responses.OrderResponse;
-import jakarta.validation.Valid;
-import org.springframework.validation.BindingResult;
+import org.aspectj.weaver.ast.Or;
 
 import java.util.List;
 
@@ -17,6 +15,10 @@ public interface OrderService {
 
     ApiResponse createNewOrder(OrderRequest request);
 
+    Order paymentOrder(OrderRequest request);
+
     ApiResponse updateOrder(OrderRequest request);
+
+    void updateOrderStatusWhenPaymentSuccess(String orderId, String status);
 
 }

@@ -148,12 +148,7 @@ const ClientNavbar = () => {
               </NavLink>
             </NavItem>
             <NavItem className="nav-item">
-              <NavLink>
-                {/* <div class="avatar avatar-xl position-relative"
-                  style= {{maxWidth: '40px', maxHeight: '40px', minWidth: '40px !important'  }}>
-                  <img src={currentUser ? currentUser.image : ''} alt="Product Image"
-                    class="img-fluid" />
-                </div> */}
+              <NavLink tag={Link} to="/my-profile">
                 <FaUser /> {currentUser ? currentUser.fullName : ''}
               </NavLink>
             </NavItem>

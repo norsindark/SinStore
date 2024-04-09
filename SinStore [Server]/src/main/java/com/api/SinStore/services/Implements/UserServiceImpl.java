@@ -61,13 +61,10 @@ public class UserServiceImpl implements UserService {
         if (user.isEmpty()) {
             throw new RuntimeException("No user found with uuid " + id);
         }
-//        byte[] imageData = request.getAvatarUrl();
         User _user = user.get();
         _user.setFullName(request.getFullName());
         _user.setEmail(request.getEmail());
-//        _user.setAvatarUrl(imageData);
         _user.setAbout(request.getAbout());
-//        _user.setPassword(passwordEncoder.encode(request.getPassword()));
         _user.setPhone(request.getPhone());
 
         Optional<Address> address = this.addressRepository.findById(_user.getAddress().getId());
