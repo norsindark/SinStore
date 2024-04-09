@@ -43,11 +43,13 @@ public class OrderRequest {
 //
 //    private String status;
 
+
     @NotBlank(message = "User ID cannot be empty")
     private String userId;
 
-    @NotBlank(message = "Address cannot be empty")
-    private String address;
+    @NotBlank(message = "Full Name cannot be empty")
+    @Pattern(regexp = "^[\\p{L}\\s]+$", message = "Country should contain only letters")
+    private String fullName;
 
     @NotBlank(message = "Country cannot be empty")
     @Pattern(regexp = "^[\\p{L}\\s]+$", message = "Country should contain only letters")
@@ -56,6 +58,9 @@ public class OrderRequest {
     @NotBlank(message = "City cannot be empty")
     @Pattern(regexp = "^[\\p{L}\\s]+$", message = "Country should contain only letters")
     private String city;
+
+    @NotBlank(message = "Address cannot be empty")
+    private String address;
 
     @NotBlank(message = "Postal Code cannot be empty")
     @Size(min = 5, max = 5, message = "Postal Code should be 5 digits")
@@ -74,9 +79,4 @@ public class OrderRequest {
     @Size(max = 255, message = "Notes should be less than 255 characters")
     private String notes;
 
-    @NotBlank(message = "Full Name cannot be empty")
-    @Pattern(regexp = "^[\\p{L}\\s]+$", message = "Country should contain only letters")
-    private String fullName;
-
-    private String status;
 }

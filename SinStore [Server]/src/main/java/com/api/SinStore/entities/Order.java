@@ -1,5 +1,6 @@
 package com.api.SinStore.entities;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 
@@ -64,4 +66,11 @@ public class Order {
     @OneToMany(mappedBy = "orderId", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<OrderItem> orderItems;
+
+    @Column(name = "created_at", nullable = false)
+    @CreationTimestamp
+    private Timestamp createdAt;
+
+    @Column(name = "updated_at")
+    private Timestamp  updatedAt;
 }

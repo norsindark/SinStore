@@ -42,7 +42,6 @@ const Profile = () => {
     setEditedName(currenUser.fullName);
     setEditedEmail(currenUser.email);
     setEditedPhone(currenUser.phone);
-    // setEditedPassword(currenUser.password);
     setEditedStreet(currenUser.address.street);
     setEditedCity(currenUser.address.city);
     setEditedCountry(currenUser.address.country);
@@ -53,8 +52,6 @@ const Profile = () => {
 
   const handleEditPassword = (currenUser) => {
     setEditingUser(currenUser);
-    // setEditedPassword(currenUser.password);
-    // setEditedConfirmPassword(currenUser.password);
     setIsModalPasswordOpen(true);
   };
 

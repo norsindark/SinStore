@@ -43,8 +43,11 @@ public class Cart {
         this.totalPrice = cartItems.stream()
                 .mapToDouble(item -> item.getQuantity() * item.getProductId().getPrice())
                 .sum();
+        this.VAT = this.totalPrice * 0.1;
     }
 
     @Column(name = "VAT", nullable = true)
-    private Double VAT = 0.1;
+    private Double VAT;
+
+
 }

@@ -1,11 +1,15 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Container, Row, Col, Input } from 'reactstrap';
-import { createNewOrder } from 'services/users/order/Order.service';
+import { createNewOrder, paymentOrder } from 'services/users/order/Order.service';
 import { UserContext } from 'context/user';
 import toast, { Toaster } from 'react-hot-toast';
+import axios from 'axios';
+import { BASE_URL_SERVER } from 'constant/network';
+import { get } from 'js-cookie';
+
 
 function CheckoutView() {
-    const { user, address, cart } = useContext(UserContext);
+    const { user, address, cart, getUserByAccessToken } = useContext(UserContext);
     const [editedFullname, setEditedFullname] = useState(user ? user.fullName : "");
     const [editedCountry, setEditedCountry] = useState(address ? address.country : "");
     const [editedCity, setEditedCity] = useState(address ? address.city : "");
@@ -70,16 +74,34 @@ function CheckoutView() {
             email: editedEmail,
             notes: editedNotes
         };
-
+        const confirm = window.confirm("Are you sure you want to create this order?");
+        if (!confirm) return;
         const response = await createNewOrder(data);
-        if(response === undefined) return;
+        if (response === undefined) return;
         if (response.httpStatus === "CREATED") {
             toast.success(response.message);
-        } else if (response.httpStatus !== "CREATED"){
+            getUserByAccessToken();
+        } else if (response.httpStatus !== "CREATED") {
             toast.error(response.message);
         }
     };
 
+    const handlePayment = async () => {
+        const data = {
+            userId: user ? user.id : 0,
+            fullName: editedFullname,
+            country: editedCountry,
+            city: editedCity,
+            address: editedStreet,
+            postalCode: editedPostalCode,
+            phone: editedPhone,
+            email: editedEmail,
+            notes: editedNotes
+        };
+        const confirm = window.confirm("Are you sure you want to pay this order?");
+        if (!confirm) return;
+        const response = await paymentOrder(data);
+    };
 
     return (
         <section className="fp__cart_view mt_125 xs_mt_95 mb_100 xs_mb_70">
@@ -194,12 +216,15 @@ function CheckoutView() {
                             <p>VAT(10%): <span>{cart && cart.totalPrice ? (cart.totalPrice * 0.1).toLocaleString() : ""} VNĐ</span></p>
                             <p className="total"><span>total:</span> <span>{cart && cart.totalPrice ? (cart.totalPrice + (cart.totalPrice * 0.1)).toLocaleString() : ""} VNĐ</span></p>
                             <form></form>
-                            <a className="common_btn" onClick={handleCreateOrder}>PLACE ORDER</a>
+                            <Col>
+                                <a className="common_btn" onClick={handleCreateOrder}>PAYMENT IN CASH</a>
+                                <a className="common_btn" onClick={handlePayment}>PAY WITH VNPAY</a>
+                            </Col>
                         </Row>
                     </Col>
                 </Row>
-            </Container>
-        </section>
+            </Container >
+        </section >
     );
 }
 

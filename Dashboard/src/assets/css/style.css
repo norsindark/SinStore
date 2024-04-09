@@ -5888,7 +5888,7 @@ CHECKOUT PAGE START
 }
 
 .fp_dashboard_body .fp__invoice {
-    display: none;
+    /* display: none; */
     background: #faf6f3fa;
     border-radius: 5px;
     padding: 30px;
