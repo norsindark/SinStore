@@ -171,6 +171,10 @@ const UserProfile = () => {
         setCurrentPage(pageNumber);
     };
 
+    const totalOrders = orders.length;
+    const completedOrders = orders.filter(order => order.status === 'COMPLETED').length;
+    const canceledOrders = orders.filter(order => order.status === 'CANCELED').length;
+
     const indexOfLastOrder = currentPage * ordersPerPage;
     const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
     const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
@@ -229,17 +233,17 @@ const UserProfile = () => {
                                             <Row>
                                                 <Col xl={4} sm={6} md={4}>
                                                     <div className="fp__dsahboard_overview_item">
-                                                        <h4> total order <span>(76)</span></h4>
+                                                        <h4>Total order <span>({totalOrders})</span></h4>
                                                     </div>
                                                 </Col>
                                                 <Col xl={4} sm={6} md={4}>
                                                     <div className="fp__dsahboard_overview_item green">
-                                                        <h4>Completed <span>(71)</span></h4>
+                                                        <h4>Completed <span>({completedOrders})</span></h4>
                                                     </div>
                                                 </Col>
                                                 <Col xl={4} sm={6} md={4}>
                                                     <div className="fp__dsahboard_overview_item red">
-                                                        <h4>cancel <span>(05)</span></h4>
+                                                        <h4>Cancel <span>({canceledOrders})</span></h4>
                                                     </div>
                                                 </Col>
                                             </Row>
@@ -381,7 +385,7 @@ const UserProfile = () => {
                                                                 backgroundColor:
                                                                     order.status === 'PENDING' ? 'green' :
                                                                         order.status === 'PAID' ? '#1aacc9' :
-                                                                            order.status === 'PAY FAILED' ? 'red' : '' ,
+                                                                            order.status === 'PAY FAILED' ? 'red' : '',
                                                                 color: 'white',
                                                             }} className={order.status === 'completed' ? 'complete' : ''}>
                                                                 {order.status}
