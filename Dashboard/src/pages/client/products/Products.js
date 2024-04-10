@@ -1,16 +1,19 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getProducts } from 'services/admin/products/product.service';
 import { Dropdown, Modal, Button, Pagination, Image, InputGroup, FormControl } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { Container, Row, Col } from 'reactstrap';
 import { addCartItem } from 'services/users/cart/userCart.service';
 import { useUserContext } from 'context/user';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
+import { getCategories } from 'services/admin/categories/category.service';
 
 const Products = () => {
     const [products, setProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
     const { user, getUserByAccessToken } = useUserContext();
     const [sortBy, setSortBy] = useState('name');
+    const [selectedCategoryId, setSelectedCategoryId] = useState(null);
     const [show, setShow] = useState(false);
     const [showProduct, setShowProduct] = useState({});
     const [showProductImage, setShowProductImage] = useState('');
@@ -21,13 +24,15 @@ const Products = () => {
     const [itemsPerPage] = useState(8);
     const [quantity, setQuantity] = useState(1);
     const [totalPrice, setTotalPrice] = useState(0);
-
+    const [filteredProducts, setFilteredProducts] = useState([]);
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
                 const fetchedProducts = await getProducts();
+                const fetchedCategories = await getCategories();
                 setProducts(fetchedProducts);
+                setCategories(fetchedCategories);
             } catch (error) {
                 console.error('Error fetching products:', error);
             }
@@ -47,11 +52,10 @@ const Products = () => {
                 productId: showProduct.id,
                 quantity: quantity
             };
-            // console.log(data);
             const response = await addCartItem(data);
             if (response.httpStatus === "OK") {
                 toast.success(response.message, { duration: 2000 }, { position: 'top-right' });
-                getUserByAccessToken()
+                getUserByAccessToken();
                 handleClose();
             } else if (response.httpStatus !== "OK") {
                 toast.error(response.message, { duration: 2000 }, { position: 'top-right' });
@@ -60,7 +64,6 @@ const Products = () => {
             console.error('Error adding item to cart:', error);
         }
     };
-
 
     const sortProducts = (type) => {
         const sortedProducts = [...products];
@@ -74,6 +77,28 @@ const Products = () => {
         setProducts(sortedProducts);
         setSortBy(type);
     };
+
+    const filterProductsByCategory = async (categoryId) => {
+        try {
+            if (categoryId) {
+                const fetchedProducts = await getProducts();
+                const filtered = fetchedProducts.filter(product => product.categoryId === categoryId);
+                setProducts(filtered);
+                console.log('filtered:', filtered);
+            } else {
+                const fetchedProducts = await getProducts();
+                setProducts(fetchedProducts);
+            }
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        }
+    };
+
+    const handleCategoryChange = (categoryId) => {
+        setSelectedCategoryId(categoryId);
+        filterProductsByCategory(categoryId);
+    };
+
 
     const handleShow = (product) => {
         let totalQuantityAvailable = product.productWarehouses.reduce((total, productWarehouse) => total + productWarehouse.quantityAvailable, 0);
@@ -117,18 +142,34 @@ const Products = () => {
 
     const truncateString = (str, maxLength) => {
         if (str.length > maxLength) {
-          return str.substring(0, maxLength) + '...';
+            return str.substring(0, maxLength) + '...';
         }
         return str;
-      };
-    
+    };
+
+    console.log(categories);
 
     return (
         <Container className="my-4">
             <Row className="mb-4">
-                <Col xs={12} className="mb-3">
+                <Col xs={12} className="mb-3" style={{ justifyContent: 'space-between', display: 'flex' }}>
+
                     <Dropdown>
-                        <Dropdown.Toggle variant="secondary" id="sortDropdown">
+                        <Dropdown.Toggle variant="secondary" id="sortDropdown" style={{ backgroundColor: "#1aacc9" }}>
+                            Find By categories
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                            <Dropdown.Item onClick={() => handleCategoryChange(null)}>All</Dropdown.Item>
+                            {categories.map((category) => (
+                                <Dropdown.Item key={category.id} onClick={() => handleCategoryChange(category.id)}>
+                                    {category.name}
+                                </Dropdown.Item>
+                            ))}
+                        </Dropdown.Menu>
+                    </Dropdown>
+
+                    <Dropdown>
+                        <Dropdown.Toggle variant="secondary" id="sortDropdown" style={{ backgroundColor: "#1aacc9" }} >
                             Sort By
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
@@ -152,7 +193,10 @@ const Products = () => {
                             </Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>
+
+
                 </Col>
+
 
                 {currentItems.map(product => (
                     <Col key={product.id} xl={3} sm={6} lg={4} className="burger pizza wow fadeInUp" data-wow-duration="1s">
@@ -239,11 +283,9 @@ const Products = () => {
                                 <h5>select quantity</h5>
                                 <Row className="quentity_btn_area d-flex flex-wrapa align-items-center">
                                     <div className="quentity_btn">
-                                        {/* <Button variant="primary" onClick={decreaseQuantity}><i className="fas fa-minus"></i></Button> */}
                                         <InputGroup className=' d-flex align-item-center'>
                                             <FormControl type="number" placeholder="Enter quantity" value={quantity} onChange={handleChange} />
                                         </InputGroup>
-                                        {/* <Button variant="success"  onClick={increaseQuantity}><i className="fas fa-plus"></i></Button> */}
                                     </div>
                                 </Row>
                             </Row>

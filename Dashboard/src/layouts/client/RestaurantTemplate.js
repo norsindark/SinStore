@@ -3,6 +3,8 @@ import ClientFooter from 'components/client/Footers/ClientFooter';
 import TopBar from 'components/client/topbar/TopBar';
 import ClientNavbar from 'components/client/navbars/ClientNavbar';
 import ClientBanner from 'components/client/Banner/ClientBanner';
+import Breadcrumb from 'components/client/Breadcrumb/Breadcrum';
+import { UserContext } from 'context/user';
 import OfferItems from 'components/client/OfferItem/OfferItems';
 import ScrollButton from 'components/client/scrollButton/ScrollButton';
 import WOW from 'wowjs';
@@ -24,6 +26,7 @@ import "../../assets/css/responsive.css";
 
 
 const RestaurantTemplate = () => {
+  const { getUserByAccessToken } = React.useContext(UserContext);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,6 +42,7 @@ const RestaurantTemplate = () => {
   }, []);
 
   useEffect(() => {
+    getUserByAccessToken();
   }, []);
 
   useEffect(() => {
@@ -82,8 +86,11 @@ const RestaurantTemplate = () => {
         {/* menu */}
         <ClientNavbar />
 
+        {/* Breadcrumb */}
+        <Breadcrumb />
+
         {/* banner */}
-        {/* <ClientBanner /> */}
+        <ClientBanner />
 
         {/* offer items */}
         <OfferItems/>

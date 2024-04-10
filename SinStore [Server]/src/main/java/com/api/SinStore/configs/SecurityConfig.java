@@ -20,14 +20,16 @@ public class SecurityConfig {
     private final JwtAuthTokenFilter jwtAuthFilter;
 
     public static final String[] UN_SECRET_URLS = {
-            "/api/v1/auth/**"
+            "/api/v1/auth/**",
+            "/api/v1/admin/dashboard/categories/all",
     };
     public static final String[] ADMIN_SECRET_URLS = {
             "/api/v1/admin/dashboard/**"
     };
 
     public static final String[] USER_SECRET_URLS = {
-            "/api/v1/client/**"
+            "/api/v1/client/**",
+
     };
 
     @Bean

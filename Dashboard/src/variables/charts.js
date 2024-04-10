@@ -1,21 +1,15 @@
 
 const Chart = require("chart.js");
-//
-// Chart extension for making the bars rounded
-// Code from: https://codepen.io/jedtrow/full/ygRYgo
-//
 
 Chart.elements.Rectangle.prototype.draw = function () {
   var ctx = this._chart.ctx;
   var vm = this._view;
   var left, right, top, bottom, signX, signY, borderSkipped, radius;
   var borderWidth = vm.borderWidth;
-  // Set Radius Here
-  // If radius is large enough to cause drawing errors a max radius is imposed
+
   var cornerRadius = 6;
 
   if (!vm.horizontal) {
-    // bar
     left = vm.x - vm.width / 2;
     right = vm.x + vm.width / 2;
     top = vm.y;
@@ -24,7 +18,6 @@ Chart.elements.Rectangle.prototype.draw = function () {
     signY = bottom > top ? 1 : -1;
     borderSkipped = vm.borderSkipped || "bottom";
   } else {
-    // horizontal bar
     left = vm.base;
     right = vm.x;
     top = vm.y - vm.height / 2;
@@ -34,26 +27,20 @@ Chart.elements.Rectangle.prototype.draw = function () {
     borderSkipped = vm.borderSkipped || "left";
   }
 
-  // Canvas doesn't allow us to stroke inside the width so we can
-  // adjust the sizes to fit if we're setting a stroke on the line
   if (borderWidth) {
-    // borderWidth shold be less than bar width and bar height.
     var barSize = Math.min(Math.abs(left - right), Math.abs(top - bottom));
     borderWidth = borderWidth > barSize ? barSize : borderWidth;
     var halfStroke = borderWidth / 2;
-    // Adjust borderWidth when bar top position is near vm.base(zero).
     var borderLeft = left + (borderSkipped !== "left" ? halfStroke * signX : 0);
     var borderRight =
       right + (borderSkipped !== "right" ? -halfStroke * signX : 0);
     var borderTop = top + (borderSkipped !== "top" ? halfStroke * signY : 0);
     var borderBottom =
       bottom + (borderSkipped !== "bottom" ? -halfStroke * signY : 0);
-    // not become a vertical line?
     if (borderLeft !== borderRight) {
       top = borderTop;
       bottom = borderBottom;
     }
-    // not become a horizontal line?
     if (borderTop !== borderBottom) {
       left = borderLeft;
       right = borderRight;
@@ -65,9 +52,6 @@ Chart.elements.Rectangle.prototype.draw = function () {
   ctx.strokeStyle = vm.borderColor;
   ctx.lineWidth = borderWidth;
 
-  // Corner points, from bottom-left to bottom-right clockwise
-  // | 1 2 |
-  // | 0 3 |
   var corners = [
     [left, bottom],
     [left, top],
@@ -75,7 +59,6 @@ Chart.elements.Rectangle.prototype.draw = function () {
     [right, bottom],
   ];
 
-  // Find first (starting) corner with fallback to 'bottom'
   var borders = ["bottom", "left", "top", "right"];
   var startCorner = borders.indexOf(borderSkipped, 0);
   if (startCorner === -1) {
@@ -86,7 +69,6 @@ Chart.elements.Rectangle.prototype.draw = function () {
     return corners[(startCorner + index) % 4];
   }
 
-  // Draw rectangle from 'startCorner'
   var corner = cornerAt(0);
   ctx.moveTo(corner[0], corner[1]);
 
@@ -97,16 +79,12 @@ Chart.elements.Rectangle.prototype.draw = function () {
       nextCornerId = 0;
     }
 
-    // let nextCorner = cornerAt(nextCornerId);
-
     let width = corners[2][0] - corners[1][0];
     let height = corners[0][1] - corners[1][1];
     let x = corners[1][0];
     let y = corners[1][1];
-    // eslint-disable-next-line
     var radius = cornerRadius;
 
-    // Fix radius being too large
     if (radius > height / 2) {
       radius = height / 2;
     }
@@ -131,12 +109,10 @@ Chart.elements.Rectangle.prototype.draw = function () {
   }
 };
 
-var mode = "light"; //(themeMode) ? themeMode : 'light';
+var mode = "light"; 
 var fonts = {
   base: "Open Sans",
 };
-
-// Colors
 var colors = {
   gray: {
     100: "#f6f9fc",
@@ -163,11 +139,15 @@ var colors = {
   transparent: "transparent",
 };
 
-// Methods
+function formatCurrency(value) {
+  const formattedValue = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return formattedValue + " VNĐ";
+}
 
-// Chart.js global options
+
+
 function chartOptions() {
-  // Options
+
   var options = {
     defaults: {
       global: {
@@ -213,7 +193,15 @@ function chartOptions() {
           enabled: true,
           mode: "index",
           intersect: false,
-        },
+          callbacks: {
+            label: function(tooltipItem, data) {
+              var label = data.datasets[tooltipItem.datasetIndex].label || "";
+              var value = tooltipItem.yLabel;
+              return label + ": " + formatCurrency(value);
+            }
+          }
+        }
+        
       },
       doughnut: {
         cutoutPercentage: 83,
@@ -239,7 +227,6 @@ function chartOptions() {
     },
   };
 
-  // yAxes
   Chart.scaleService.updateScaleDefaults("linear", {
     gridLines: {
       borderDash: [2],
@@ -264,7 +251,6 @@ function chartOptions() {
     },
   });
 
-  // xAxes
   Chart.scaleService.updateScaleDefaults("category", {
     gridLines: {
       drawBorder: false,
@@ -279,7 +265,6 @@ function chartOptions() {
   return options;
 }
 
-// Parse global options
 function parseOptions(parent, options) {
   for (var item in options) {
     if (typeof options[item] !== "object") {
@@ -290,7 +275,6 @@ function parseOptions(parent, options) {
   }
 }
 
-// Example 1 of Chart inside src/views/Index.js (Sales value - Card)
 let chartExample1 = {
   options: {
     scales: {
@@ -351,7 +335,6 @@ let chartExample1 = {
   },
 };
 
-// Example 2 of Chart inside src/views/Index.js (Total orders - Card)
 let chartExample2 = {
   options: {
     scales: {
@@ -396,8 +379,8 @@ let chartExample2 = {
 };
 
 module.exports = {
-  chartOptions, // used inside src/views/Index.js
-  parseOptions, // used inside src/views/Index.js
-  chartExample1, // used inside src/views/Index.js
-  chartExample2, // used inside src/views/Index.js
+  chartOptions, 
+  parseOptions, 
+  chartExample1, 
+  chartExample2, 
 };

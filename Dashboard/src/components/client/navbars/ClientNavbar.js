@@ -5,10 +5,12 @@ import { Navbar, NavbarBrand, Nav, NavItem, NavLink, Collapse, NavbarToggler, In
 import { FaSearch, FaShoppingBasket, FaUser } from 'react-icons/fa';
 import { getProducts } from 'services/admin/products/product.service';
 import { useUserContext } from 'context/user';
+import { useAuth } from 'context/auth';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const ClientNavbar = () => {
   const [totalItems, setTotalItems] = useState(0);
+  const { signOut } = useAuth();
   const [currentUser, setCurrentUser] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -104,14 +106,15 @@ const ClientNavbar = () => {
             <NavItem>
               <NavLink tag={Link} to="/" className="nav-link" active={window.location.pathname === '/'}>Home</NavLink>
             </NavItem>
-            <NavItem>
-              <NavLink tag={Link} to="/about" className="nav-link" active={window.location.pathname === '/about'}>About</NavLink>
-            </NavItem>
+            {/* <NavItem>
+              <NavLink tag={Link} to="/products" className="nav-link" active={window.location.pathname === '/products'}>Categories</NavLink>
+            </NavItem> */}
+
             <NavItem>
               <NavLink tag={Link} to="/products" className="nav-link" active={window.location.pathname === '/products'}>Menu</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink tag={Link} to="/chefs" className="nav-link" active={window.location.pathname === '/chefs'}>Chefs</NavLink>
+              <NavLink tag={Link} to="/about" className="nav-link" active={window.location.pathname === '/about'}>About</NavLink>
             </NavItem>
           </Nav>
           <Nav className="menu_icon d-flex flex-wrap" navbar>
@@ -151,6 +154,10 @@ const ClientNavbar = () => {
               <NavLink tag={Link} to="/my-profile">
                 <FaUser /> {currentUser ? currentUser.fullName : ''}
               </NavLink>
+            </NavItem>
+
+            <NavItem className="nav-item">
+              <NavLink onClick={signOut} style={{ cursor: 'pointer' }}>Sign Out</NavLink>
             </NavItem>
           </Nav>
         </Collapse>

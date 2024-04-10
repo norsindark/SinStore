@@ -393,7 +393,7 @@ const UserProfile = () => {
                                                         </td>
 
                                                         <td>
-                                                            <h5>{order.totalPrice} VNĐ</h5>
+                                                            <h5>{order.totalPrice.toLocaleString('vi-VN')} VNĐ</h5>
                                                         </td>
                                                         <td>
                                                             <Link className="view_invoice" onClick={() => handleViewInvoice(order)}>View Details</Link>
@@ -459,19 +459,26 @@ const UserProfile = () => {
                                                                 <p>{item.productId.name.substring(0, 20)}</p>
                                                                 <span>{item.productId.description.split(' ').slice(0, 5).join(' ')}</span>
                                                             </td>
-                                                            <td className="price">{item.productId.price} VNĐ</td>
+                                                            <td className="price">{item.productId.price.toLocaleString('vi-VN')} VNĐ</td>
                                                             <td className="qnty">{item.quantity}</td>
-                                                            <td className="total">{item.quantity * item.productId.price} VNĐ</td>
+                                                            <td className="total">{(item.quantity * item.productId.price).toLocaleString('vi-VN')} VNĐ</td>
                                                         </tr>
                                                     ))}
                                                 </tbody>
                                                 <tfoot>
                                                     <tr>
                                                         <td className="package" colSpan="3">
+                                                            <b>VAT(10%)</b>
+                                                        </td>
+                                                        <td className="qnty"></td>
+                                                        <td className="total">{(selectedOrder.totalPrice * 0.1).toLocaleString('vi-VN')} VNĐ</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td className="package" colSpan="3">
                                                             <b>Sub Total</b>
                                                         </td>
                                                         <td className="qnty"></td>
-                                                        <td className="total">{selectedOrder.totalPrice} VNĐ</td>
+                                                        <td className="total">{selectedOrder.totalPrice.toLocaleString('vi-VN')} VNĐ</td>
                                                     </tr>
                                                 </tfoot>
                                             </table>

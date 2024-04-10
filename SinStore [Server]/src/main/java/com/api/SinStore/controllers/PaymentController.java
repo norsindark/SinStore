@@ -3,8 +3,10 @@ package com.api.SinStore.controllers;
 import com.api.SinStore.payloads.requests.OrderRequest;
 import com.api.SinStore.payloads.requests.PaymentRequest;
 import com.api.SinStore.payloads.responses.PaymentResponse;
+import com.api.SinStore.services.Interfaces.EmailService;
 import com.api.SinStore.services.Interfaces.OrderService;
 import com.api.SinStore.services.Interfaces.PaymentService;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -32,6 +34,8 @@ public class PaymentController {
 
     private final HttpServletResponse response;
 
+    private  final EmailService emailService;
+
     @GetMapping("/create-payment-url")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public String createPaymentUrl(HttpServletRequest request, HttpSession session,
@@ -52,7 +56,7 @@ public class PaymentController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public PaymentResponse paymentCallback(@RequestParam Map<String, String> queryParams, HttpServletResponse response
             , HttpSession session)
-            throws IOException {
+            throws IOException, MessagingException {
         String vnp_ResponseCode = queryParams.get("vnp_ResponseCode");
         String orderInfo = queryParams.get("vnp_OrderInfo");
 
@@ -61,15 +65,17 @@ public class PaymentController {
 
         if(vnp_ResponseCode.equals("00")) {
             String status = "PAID";
-            orderService.updateOrderStatusWhenPaymentSuccess(orderInfo, status);
+            orderService.updateOrderStatusWhenPayment(orderInfo, status);
             paymentResponse.setMessage("PAY SUCCESS");
             paymentResponse.setStatus(HttpStatus.OK);
+            emailService.sendMailOrder(orderInfo);
             return paymentResponse;
         } else {
             String status = "PAY FAILED";
-            orderService.updateOrderStatusWhenPaymentSuccess(orderInfo, status);
+            orderService.updateOrderStatusWhenPayment(orderInfo, status);
             paymentResponse.setMessage("PAY FAILED");
             paymentResponse.setStatus(HttpStatus.BAD_REQUEST);
+            emailService.sendMailOrder(orderInfo);
             return paymentResponse;
         }
     }

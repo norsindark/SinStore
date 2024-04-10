@@ -1,4 +1,4 @@
-import React, { useState, useParams  } from "react";
+import React, { useState, useEffect, useParams } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import RestaurantTemplate from "layouts/client/RestaurantTemplate";
 import ClientProduct from "layouts/client/ClientProduct";
@@ -7,6 +7,8 @@ import CartLayout from "layouts/client/CartLayout";
 import CheckoutLayout from "layouts/client/CheckoutLayout";
 import UserProfileLayout from "layouts/client/UserProfileLayout";
 import PaymentResultLayout from "layouts/client/PaymentResultLayout";
+
+import { useAuth } from "context/auth.js";
 
 import "assets/plugins/nucleo/css/nucleo.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -18,6 +20,22 @@ import AuthLayout from "layouts/dashboard/Auth";
 import UnauthorizedPage from "./pages/errors/UnauthorizedPage";
 
 const App = () => {
+  const { getUserByAccessToken } = useAuth();
+  const [ role, setRole ] = useState(null);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const user = await getUserByAccessToken();
+      // console.log("User:", user);
+      if (user) {
+        setRole(user.role.name);
+      };
+    }
+    checkAuth();
+  }, [ getUserByAccessToken, role]);
+
+  // console.log("Role:", role);
+
   return (
     <Routes>
       <Route path="/*" element={<RestaurantTemplate />} />
@@ -27,7 +45,11 @@ const App = () => {
       <Route path="/cart" element={<CartLayout />} />
       <Route path="/payment-result/*" element={<PaymentResultLayout />} />
       <Route path="/my-profile" element={<UserProfileLayout />} />
-      <Route path="/admin/*" element={<AdminLayout />} />
+      {role === "ADMIN" ?  (
+        <Route path="/admin/*" element={<AdminLayout />} />
+      ) : (
+        <Route path="/" element={<RestaurantTemplate />} />
+      )}
       <Route path="/auth/*" element={<AuthLayout />} />
       <Route path="*" element={<UnauthorizedPage />} />
     </Routes>

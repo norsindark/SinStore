@@ -5,6 +5,8 @@ import TableUsers from "pages/dashboard/users/TableUsers";
 import Icons from "views/examples/Icons.js";
 import TableProducts from "pages/dashboard/products/TableProducts";
 import TableCategories from "pages/dashboard/categories/TableCategories";
+import RestaurantTemplate from "layouts/client/RestaurantTemplate";
+import TableOrder from "pages/dashboard/orders/TableOrder";
 
 var routes = [
   {
@@ -16,10 +18,27 @@ var routes = [
     roles: ['ADMIN'] 
   },
   {
+    path: "/",
+    name: "Client",
+    icon: "ni ni-laptop",
+    component: <RestaurantTemplate />,
+    layout: "/client",
+    roles: ['ADMIN', 'USER',]
+  },
+  {
     path: "/icons",
     name: "Icons",
     icon: "ni ni-planet text-blue",
     component: <Icons />,
+    layout: "/admin",
+    roles: ['ADMIN'] 
+  },
+
+  {
+    path: "/table-order",
+    name: "Table Order",
+    icon: "ni ni-money-coins",
+    component: <TableOrder />,
     layout: "/admin",
     roles: ['ADMIN'] 
   },
@@ -54,20 +73,6 @@ var routes = [
     component: <TableCategories />,
     layout: "/admin",
     roles: ['ADMIN'] 
-  },
-  // {
-  //   path: "/login",
-  //   name: "Login",
-  //   icon: "ni ni-key-25 text-info",
-  //   component: <Login />,
-  //   layout: "/auth",
-  // },
-  // {
-  //   path: "/register",
-  //   name: "Register",
-  //   icon: "ni ni-circle-08 text-pink",
-  //   component: <Register />,
-  //   layout: "/auth",
-  // },
+  }
 ];
 export default routes;

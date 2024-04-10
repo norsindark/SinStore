@@ -25,6 +25,8 @@ export default function AuthProvider({ children }) {
 
     const removeToken = () => {
         localStorage.removeItem("accessToken");
+        localStorage.removeItem("toastRenderCount");
+        localStorage.removeItem("activeTab");
     };
 
     const signOut = async () => {

@@ -18,14 +18,61 @@ import {
   InputGroup,
 } from "reactstrap";
 import avtImg from "../../../assets/img/theme/avt.jpg";
-
+import toast, { Toaster } from "react-hot-toast";
+import { getProducts } from "services/admin/products/product.service";
 
 const AdminNavbar = ({ brandText }) => {
+  const [products, setProducts] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const { getUserByAccessToken } = useAuth();
   const [isAuthenticatedChecked, setIsAuthenticatedChecked] = useState(false);
+  const [toastRendered, setToastRendered] = useState(false);
 
   useEffect(() => {
+    if (toastRendered) {
+      return;
+    }
+
+    const fetchProducts = async () => {
+      try {
+        const productsData = await getProducts();
+        setProducts(productsData);
+        checkLowStock(productsData);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    const checkLowStock = (productsData) => {
+      productsData.forEach(product => {
+        product.productWarehouses.forEach(warehouse => {
+          if (warehouse.quantityAvailable < 50) {
+            toast.custom((t) => (
+              <div
+                className={`custom-toast ${t.visible ? 'animate-enter' : 'animate-leave'
+                  } bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+              >
+                <div className="flex-1 w-0 p-4">
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0 pt-0.5 d-flex " style={{ alignItems: 'center !important' }}>
+                      <img
+                        className="h-8 w-8 rounded-full"
+                        src={product.image}
+                        alt=""
+                      />
+                      <p className="mt-1 text-sm text-gray-700">
+                        {product.name} LOW STOCK: {warehouse.quantityAvailable} AVAILABLE
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ));
+          }
+        });
+      });
+    };
+
     const getUser = async () => {
       const user = await getUserByAccessToken();
       if (user) {
@@ -37,10 +84,17 @@ const AdminNavbar = ({ brandText }) => {
       setIsAuthenticatedChecked(true);
     };
 
-    if (!isAuthenticatedChecked || !currentUser) {
-      getUser();
+    const toastRenderCount = parseInt(localStorage.getItem('toastRenderCount')) || 0;
+    if (toastRenderCount < 1) {
+      localStorage.setItem('toastRenderCount', (toastRenderCount + 1).toString());
+      fetchProducts();
+    } else {
+      setToastRendered(true);
     }
-  }, [isAuthenticatedChecked, getUserByAccessToken, currentUser]);
+
+    getUser();
+  }, [isAuthenticatedChecked, getUserByAccessToken, currentUser, toastRendered]);
+
 
   return (
     <>
@@ -71,9 +125,9 @@ const AdminNavbar = ({ brandText }) => {
                   <span className="avatar avatar-sm rounded-circle">
                     <img
                       alt="..."
-                      src={ avtImg}
+                      src={avtImg}
 
-                      // src={currentUser ? currentUser.avatarUrl : avtImg}
+                    // src={currentUser ? currentUser.avatarUrl : avtImg}
                     />
                   </span>
                   <Media className="ml-2 d-none d-lg-block">

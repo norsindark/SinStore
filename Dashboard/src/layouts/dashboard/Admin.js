@@ -20,11 +20,12 @@ const AdminLayout = (props) => {
     const checkAuth = async () => {
       const user = await getUserByAccessToken();
       if (user) {
-        if (user.role.name !== "ADMIN") {
+        if (user.role.name === "ADMIN") {
           setCurrentUser(user);
           navigate("/admin/dashboard");
-        } else {
           // console.log("User:", user.role.name );
+        } else if (user.role.name !== "ADMIN"){
+          navigate("/");
         }
       } else {
         console.log("User is null");

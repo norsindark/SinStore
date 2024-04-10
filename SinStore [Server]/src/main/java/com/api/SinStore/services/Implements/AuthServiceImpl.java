@@ -63,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
                     .email(signUpRequest.getEmail())
                     .password(encoder.encode(signUpRequest.getPassword()))
                     .role(role)
-                    .enabled(false)
+                    .enabled(true)
                     .status("INACTIVE")
                     .build();
             User savedUser = this.userRepository.save(_user);
