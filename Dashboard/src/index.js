@@ -16,7 +16,7 @@ root.render(
       <Toaster
         position="top-right"
         reverseOrder={false}
-        gutter={8}
+        gutter={20}
       />
       <UserProdider>
         <App />

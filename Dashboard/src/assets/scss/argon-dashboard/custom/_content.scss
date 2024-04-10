@@ -23,7 +23,19 @@
 }
 
 
-// Offsets the main content depending on the sidebar positioning
+.custom-toast {
+    width: 400px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+}
+
+.custom-toast img{
+    height: 100px !important;
+    width: 100px !important;
+}
+
+
 
 .navbar-vertical.navbar-expand {
 
@@ -35,10 +47,12 @@
             @include media-breakpoint-up(#{$breakpoint}) {
 
                 // Left
-                &.fixed-left + .main-content {
+                &.fixed-left+.main-content {
                     margin-left: $navbar-vertical-width;
-                } // Right
-                &.fixed-right + .main-content {
+                }
+
+                // Right
+                &.fixed-right+.main-content {
                     margin-right: $navbar-vertical-width;
                 }
             }

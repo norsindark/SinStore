@@ -1,5 +1,6 @@
 package com.api.SinStore.services.Implements;
 
+import com.api.SinStore.dtos.OderStatusDto;
 import com.api.SinStore.entities.*;
 import com.api.SinStore.payloads.requests.OrderRequest;
 import com.api.SinStore.repositories.*;
@@ -193,7 +194,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void updateOrderStatusWhenPaymentSuccess(String id, String status) {
+    public void updateOrderStatusWhenPayment(String id, String status) {
         try {
             Optional<Order> order = orderRepository.findById(id);
             if (order.isEmpty()) {
@@ -205,6 +206,21 @@ public class OrderServiceImpl implements OrderService {
             new ApiResponse("Order status updated successfully", HttpStatus.OK);
         } catch (Exception e) {
             new ApiResponse("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public ApiResponse updateOrderStatus(String id, OderStatusDto request) {
+        try {
+            Optional<Order> order = orderRepository.findById(id);
+            if (order.isEmpty()) {
+                return new ApiResponse("Order not found", HttpStatus.NOT_FOUND);
+            }
+            order.get().setStatus(request.getStatus());
+            this.orderRepository.save(order.get());
+            return new ApiResponse("Order status updated successfully", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ApiResponse("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

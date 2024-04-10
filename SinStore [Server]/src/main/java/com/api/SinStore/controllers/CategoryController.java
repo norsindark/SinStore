@@ -25,7 +25,7 @@ public class CategoryController {
 
     @CrossOrigin(origins ="*", allowedHeaders = "*")
     @GetMapping("/all")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<?> getAllCategories() {
         return ResponseEntity.ok(this.categoryService.getAllCategories());
     }
