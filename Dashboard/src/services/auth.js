@@ -35,19 +35,11 @@ async function getRoleUser(email) {
 async function sendEmail(email) {
   try {
     console.log(email);
-    const response = await axios.post(`${BASE_URL_SERVER}/api/v1/auth/reset-password?email=${email}`,
-      {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-        }
-      });
+    const response = await axios.post(`${BASE_URL_SERVER}/api/v1/auth/reset-password?email=${email}`);
 
-    if (response.data === 200) {
-      window.alert("Email sent successfully");
-    } else {
-      window.alert("Email not found");
-    };
-
+    if (!response) {
+      return null;
+    }
     return response.data;
   } catch (error) {
     console.error("Error sending email:", error);
@@ -58,7 +50,7 @@ async function sendEmail(email) {
 async function changePassword(token, password) {
   try {
     console.log(token, password);
-    const response = await axios.post(`http://localhost:8080/api/v1/auth/change-password?token=${token}`, { password});
+    const response = await axios.post(`http://localhost:8080/api/v1/auth/change-password?token=${token}`, { password });
     if (!response.data) {
       throw new Error("Failed to check forgot password token");
     }
