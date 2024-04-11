@@ -4,6 +4,9 @@ import { Button, Card, CardBody, Col, FormGroup, Form, Input, InputGroup, InputG
 import axios from "axios";
 import { useAuth } from "context/auth";
 import { signIn, getRoleUser, sendEmail } from "services/auth";
+import toast, { Toaster } from 'react-hot-toast';
+import { duration } from "moment";
+
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -46,13 +49,16 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await sendEmail(email);
-      // alert("Email sent successfully!");
+      toast.loading("Sending email...", duration = 5000);
+      const response = await sendEmail(email);
+      if (response.httpStatus === "OK") {
+        toast.dismiss();
+        toast.success("Email sent successfully");
+      }
       setEmail("");
       toggleModal();
     } catch (error) {
-      console.error("Error sending email:", error);
-      alert("An error occurred while sending email.");
+      toast.error("An error occurred while sending email.");
       setEmail("");
     }
   };
