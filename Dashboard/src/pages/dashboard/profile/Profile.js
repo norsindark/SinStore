@@ -6,7 +6,9 @@ import { useAuth } from "context/auth";
 import { updateUser, changePassword } from "services/user";
 import { BASE_API } from "constant/network";
 import avtImg from "../../../assets/img/theme/avt.jpg";
-import { FaEye, FaEyeSlash} from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { uploadAvatar } from "services/users/profile/userProfile.service";
+import toast, { Toaster } from 'react-hot-toast'; 
 
 const Profile = () => {
   const [currenUser, setCurrenUser] = useState(null);
@@ -32,7 +34,6 @@ const Profile = () => {
     const fetchUser = async () => {
       const user = await getUserByAccessToken();
       setCurrenUser(user);
-      console.log("User:", user);
     };
     fetchUser();
   }, []);
@@ -132,26 +133,19 @@ const Profile = () => {
 
     updateUser(editingUser, formData, setIsModalOpen, setEditingUser);
   };
-  
-  const handleImageChange = async (e) => {
-    const file = e.target.files[0];
 
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      const base64String = reader.result;
-
-      try {
-        setEditingUser(currenUser);
-        const updatedUser = { ...currenUser, avatarUrl: base64String };
-        await axios.put(`${BASE_API}/users/${currenUser.id}`, updatedUser);
-        console.log("Avatar updated successfully!");
-      } catch (error) {
-        console.error("Error updating avatar:", error);
-      }
-    };
-    reader.readAsDataURL(file);
+  const handleUploadAvatar = async (event) => {
+    const file = event.target.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+    toast.loading('Uploading avatar...');
+    const response = await uploadAvatar(currenUser.id, formData);
+    if (response.status === 200) {
+      toast.dismiss();
+      toast.success('Avatar updated successfully');
+    } else {
+      toast.error('Failed to update avatar');
+    }
   };
 
   return (
@@ -169,7 +163,7 @@ const Profile = () => {
                       <img
                         alt="..."
                         className="rounded-circle"
-                        src={avatarBase64 || (currenUser?.avatarUrl ?? avtImg)}
+                        src={avatarBase64 || (currenUser?.avatar ?? avtImg)}
                       />
                     </label>
                     <input
@@ -177,7 +171,7 @@ const Profile = () => {
                       id="avatar-upload"
                       accept="image/*"
                       style={{ display: 'none' }}
-                      onChange={handleImageChange}
+                      onChange={handleUploadAvatar}
                     />
                   </div>
                 </Col>

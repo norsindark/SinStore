@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import logoImg from "../../../assets/img/logo.png";
 import { Link } from 'react-router-dom';
 import { Navbar, NavbarBrand, Nav, NavItem, NavLink, Collapse, NavbarToggler, InputGroup, InputGroupAddon, InputGroupText, Input, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
-import { FaSearch, FaShoppingBasket, FaUser } from 'react-icons/fa';
+import { FaSearch, FaShoppingBasket, FaUser, FaSignOutAlt } from 'react-icons/fa';
 import { getProducts } from 'services/admin/products/product.service';
 import { useUserContext } from 'context/user';
 import { useAuth } from 'context/auth';
@@ -157,7 +157,9 @@ const ClientNavbar = () => {
             </NavItem>
 
             <NavItem className="nav-item">
-              <NavLink onClick={signOut} style={{ cursor: 'pointer' }}>Sign Out</NavLink>
+              <NavLink onClick={signOut} style={{ cursor: 'pointer' }}>
+                <FaSignOutAlt />
+              </NavLink>
             </NavItem>
           </Nav>
         </Collapse>
