@@ -10,6 +10,8 @@ import com.api.SinStore.repositories.AddressRepository;
 import com.api.SinStore.repositories.UserRepository;
 import com.api.SinStore.services.Interfaces.UserService;
 import com.api.SinStore.utils.GetUserUtil;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,9 +19,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -33,6 +37,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final EmailServiceImpl emailService;
+
+    private final Cloudinary cloudinary;
 
     @Override
     @Transactional
@@ -108,4 +114,19 @@ public class UserServiceImpl implements UserService {
         return new ApiResponse("Token has been sent to your email!", HttpStatus.OK);
     }
 
+    @Override
+    public ApiResponse updateAvatar(MultipartFile file, String id) throws UserNotFoundException, IOException {
+        Optional<User> user = this.userRepository.findById(id);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("User not found with: " + id);
+        }
+
+        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+        String imageUrl = (String) uploadResult.get("url");
+
+        User _user = user.get();
+        _user.setAvatar(imageUrl);
+        this.userRepository.save(_user);
+        return new ApiResponse("Image updated successfully!", HttpStatus.OK);
+    }
 }

@@ -6,7 +6,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Input } fr
 import { useUserContext } from 'context/user';
 import avtImg from 'assets/img/avt.jpg';
 import { Pagination } from 'react-bootstrap';
-import { updateUserProfile } from 'services/users/profile/userProfile.service';
+import { updateUserProfile, uploadAvatar } from 'services/users/profile/userProfile.service';
 import toast, { Toaster } from 'react-hot-toast';
 import moment from 'moment';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
@@ -171,6 +171,21 @@ const UserProfile = () => {
         setCurrentPage(pageNumber);
     };
 
+    const handleUploadAvatar = async (event) => {
+        const file = event.target.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+        toast.loading('Uploading avatar...');
+        const response = await uploadAvatar(currentUser.id, formData);
+        if (response.status === 200) {
+            toast.dismiss();
+            toast.success('Avatar updated successfully');
+            getUserByAccessToken();
+        } else {
+            toast.error('Failed to update avatar');
+        }
+    };
+
     const totalOrders = orders.length;
     const completedOrders = orders.filter(order => order.status === 'COMPLETED').length;
     const canceledOrders = orders.filter(order => order.status === 'CANCELED').length;
@@ -189,15 +204,14 @@ const UserProfile = () => {
                     <div className="fp__dashboard_menu">
                         <div className="dasboard_header">
                             <div className="dasboard_header_img">
-                                <img src={avtImg} alt="user" className="img-fluid w-100" />
+                                {/* <img src={avtImg} alt="user" className="img-fluid w-100" /> */}
+                                <img src={currentUser && currentUser.avatar ? currentUser.avatar : ""} alt="user" className="img-fluid w-100" />
                                 <Label htmlFor="upload">
                                     <FaCamera />
                                 </Label>
-                                <input type="file" id="upload" hidden />
+                                <input type="file" id="upload" hidden onChange={handleUploadAvatar} /> 
                             </div>
                             <h2>{currentUser && currentUser.fullName ? currentUser.fullName : ""}</h2>
-
-
                         </div>
                         <div className="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                             <Button className={`nav-link ${activeTab === 'info' ? 'active' : ''}`} onClick={() => handleTabClick('info')}>

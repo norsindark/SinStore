@@ -10,7 +10,14 @@ async function updateUserProfile(editingUser, data) {
     return response;
 };
 
+async function uploadAvatar(id,data) {
+    const response = await axios.put(`${BASE_URL_SERVER}/api/v1/client/user/update-avatar/${id}`, data, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
+    });
+    return response;
+}
 
 export {
     updateUserProfile,
+    uploadAvatar,
 }

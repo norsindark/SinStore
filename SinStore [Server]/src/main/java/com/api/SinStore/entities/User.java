@@ -53,10 +53,6 @@ public class User implements UserDetails {
     @Column(name = "enable")
     private boolean enabled;
 
-//    @Lob
-//    @Column(name = "avatarUrl", columnDefinition = "BYTEA")
-//    private byte[] avatarUrl;
-
     @Column(name = "created_at", nullable = false)
     @CreationTimestamp
     private Timestamp created_at;
@@ -76,6 +72,9 @@ public class User implements UserDetails {
     @OneToOne(cascade = CascadeType.REMOVE, mappedBy = "userId")
     @JsonManagedReference
     private Cart cart;
+
+    @Column(name = "avatar", nullable = true)
+    private String avatar;
 
     @OneToMany(mappedBy = "userId", cascade = CascadeType.REMOVE)
     @JsonManagedReference
