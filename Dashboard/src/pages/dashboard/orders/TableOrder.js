@@ -82,7 +82,7 @@ const TableOrder = () => {
                     <div className="col">
                         <Card className="shadow">
                             <CardHeader className="border-0">
-                                <h3 className="mb-0">Categories</h3>
+                                <h3 className="mb-0">Orders</h3>
                             </CardHeader>
 
                             <Table className="align-items-center table-flush" responsive>
