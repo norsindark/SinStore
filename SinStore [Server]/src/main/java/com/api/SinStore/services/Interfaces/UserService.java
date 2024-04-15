@@ -6,7 +6,9 @@ import com.api.SinStore.exceptions.UserNotFoundException;
 import com.api.SinStore.payloads.requests.PasswordRequest;
 import com.api.SinStore.payloads.responses.ApiResponse;
 import jakarta.mail.MessagingException;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;
@@ -22,4 +24,5 @@ public interface UserService {
 
     ApiResponse forgotPassword(String email) throws UserNotFoundException, MessagingException, UnsupportedEncodingException;
 
+    ApiResponse updateAvatar(MultipartFile file, String id) throws UserNotFoundException, IOException;
 }

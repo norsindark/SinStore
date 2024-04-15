@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,5 +56,14 @@ public class UserController {
             @Valid @RequestBody PasswordRequest request, @PathVariable String id
     ) throws UserNotFoundException {
         return ResponseEntity.ok(this.userService.changePassword(request, id));
+    }
+
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PutMapping("/update-avatar/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse> updateAvatar(
+            @RequestParam("file") MultipartFile file, @PathVariable String id
+    ) throws UserNotFoundException, IOException {
+        return ResponseEntity.ok(this.userService.updateAvatar(file, id));
     }
 }
