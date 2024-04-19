@@ -10,6 +10,7 @@ import com.api.SinStore.exceptions.SignInException;
 import com.api.SinStore.exceptions.SignUpException;
 import com.api.SinStore.exceptions.UserNotFoundException;
 import com.api.SinStore.payloads.requests.LoginRequest;
+import com.api.SinStore.payloads.requests.PasswordRequest;
 import com.api.SinStore.payloads.requests.SignUpRequest;
 import com.api.SinStore.payloads.responses.ApiResponse;
 import com.api.SinStore.payloads.responses.JwtResponse;
@@ -41,7 +42,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final AddressRepository addressRepository;
 
-    private final PasswordEncoder encoder;
+    private final PasswordEncoder passwordEncoder;
 
     private final AuthenticationManager authenticationManager;
 
@@ -61,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
             User _user = User.builder()
                     .fullName(signUpRequest.getFullName())
                     .email(signUpRequest.getEmail())
-                    .password(encoder.encode(signUpRequest.getPassword()))
+                    .password(passwordEncoder.encode(signUpRequest.getPassword()))
                     .role(role)
                     .enabled(true)
                     .status("INACTIVE")
@@ -124,15 +125,14 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ApiResponse changePassword(String token, String password) throws UserNotFoundException {
+    public ApiResponse changePassword(String token, PasswordRequest request) throws UserNotFoundException {
         Optional<User> user = this.userRepository.findByForgotPasswordToken(token);
         if (user.isEmpty()) {
-            throw new UserNotFoundException("User not found!");
+            throw new UserNotFoundException("with token!" + token);
         }
         User _user = user.get();
-        _user.setPassword(encoder.encode(password));
-        _user.setForgotPasswordToken(null);
+        _user.setPassword(passwordEncoder.encode(request.getPassword()));
         this.userRepository.save(_user);
-        return new ApiResponse("Change password successfully!", HttpStatus.OK);
+        return new ApiResponse("Password change successfully!", HttpStatus.OK);
     }
 }

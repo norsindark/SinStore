@@ -16,8 +16,8 @@ import java.util.function.Function;
 @Slf4j
 @Component
 public class JwtProviderUtils {
-    @Value("${SinStore.app.jwtSecret}")
-    private String jwtSecret;
+//    @Value("${SinStore.app.jwtSecret}")
+    private final static String jwtSecret = "99c7571de87176741a2d3132f82ea909fbd283a69059949b05a63e54d573e689";
 
     @Value("${SinStore.app.jwtExpirationMs")
     private String jwtExpired;

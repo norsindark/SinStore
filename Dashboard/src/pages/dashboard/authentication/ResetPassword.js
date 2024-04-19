@@ -44,7 +44,7 @@ const ResetPassword = () => {
 
         try {
             const tokenResponse = await changePassword(token, password);
-            // console.log(tokenResponse);
+            console.log(tokenResponse);
 
             if (tokenResponse) {
                window.alert(tokenResponse.message);   

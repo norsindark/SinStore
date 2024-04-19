@@ -58,7 +58,8 @@ const Login = () => {
       setEmail("");
       toggleModal();
     } catch (error) {
-      toast.error("An error occurred while sending email.");
+      toast.dismiss();
+      toast.error("Email not found. Please try again!");
       setEmail("");
     }
   };
