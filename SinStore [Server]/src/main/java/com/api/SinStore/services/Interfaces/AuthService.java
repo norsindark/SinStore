@@ -5,6 +5,7 @@ import com.api.SinStore.exceptions.SignInException;
 import com.api.SinStore.exceptions.SignUpException;
 import com.api.SinStore.exceptions.UserNotFoundException;
 import com.api.SinStore.payloads.requests.LoginRequest;
+import com.api.SinStore.payloads.requests.PasswordRequest;
 import com.api.SinStore.payloads.requests.SignUpRequest;
 import com.api.SinStore.payloads.responses.ApiResponse;
 import com.api.SinStore.payloads.responses.JwtResponse;
@@ -18,5 +19,5 @@ public interface AuthService {
 
     Boolean checkResetPasswordToken(String email) throws UserNotFoundException;
 
-    ApiResponse changePassword(String token, String password) throws UserNotFoundException;
+    ApiResponse changePassword(String token, PasswordRequest request) throws UserNotFoundException;
 }

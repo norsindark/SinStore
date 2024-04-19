@@ -7,9 +7,10 @@ async function signIn(email, password) {
       email,
       password
     };
+    console.log(requestData);
     const response = await axios.post(`${BASE_URL_SERVER}/api/v1/auth/login`, requestData);
 
-    // console.log(response.data);
+    console.log(response.data);
 
     if (!response.data) throw new Error()
 

@@ -7,6 +7,7 @@ import com.api.SinStore.exceptions.SignInException;
 import com.api.SinStore.exceptions.SignUpException;
 import com.api.SinStore.exceptions.UserNotFoundException;
 import com.api.SinStore.payloads.requests.LoginRequest;
+import com.api.SinStore.payloads.requests.PasswordRequest;
 import com.api.SinStore.payloads.requests.SignUpRequest;
 import com.api.SinStore.payloads.responses.ApiResponse;
 import com.api.SinStore.payloads.responses.JwtResponse;
@@ -73,9 +74,9 @@ public class AuthController {
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping("/change-password")
-    public ResponseEntity<ApiResponse> changePassword(@RequestParam String token, @RequestBody String password)
+    public ResponseEntity<ApiResponse> changePassword(@RequestParam String token, @RequestBody PasswordRequest request)
             throws UserNotFoundException {
-        return ResponseEntity.ok(this.authService.changePassword(token, password));
+        return ResponseEntity.ok(this.authService.changePassword(token, request));
     }
 
     @CrossOrigin(origins = "*", allowedHeaders = "*")

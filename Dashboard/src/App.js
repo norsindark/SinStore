@@ -26,7 +26,6 @@ const App = () => {
   useEffect(() => {
     const checkAuth = async () => {
       const user = await getUserByAccessToken();
-      // console.log("User:", user);
       if (user) {
         setRole(user.role.name);
       };
@@ -34,7 +33,6 @@ const App = () => {
     checkAuth();
   }, [ getUserByAccessToken, role]);
 
-  // console.log("Role:", role);
 
   return (
     <Routes>
